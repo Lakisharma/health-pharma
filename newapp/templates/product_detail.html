@@ -1,0 +1,219 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ product.name }} - HealthPharma{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <!-- Product Image -->
+        <div class="col-md-5 mb-4">
+            <div style="background: #f8f9fa; border-radius: 10px; overflow: hidden;">
+                {% if product.image %}
+                    <img src="{{ product.image.url }}" alt="{{ product.name }}" class="w-100" style="height: 500px; object-fit: cover;">
+                {% else %}
+                    <img src="https://via.placeholder.com/500?text=No+Image" alt="No Image" class="w-100">
+                {% endif %}
+            </div>
+        </div>
+        
+        <!-- Product Details -->
+        <div class="col-md-7">
+            <h1>{{ product.name }}</h1>
+            <p class="text-muted mb-3">
+                <strong>Generic Name:</strong> {{ product.generic_name|default:"N/A" }}
+            </p>
+            
+            <!-- Rating -->
+            <div class="mb-3">
+                <span class="stars">
+                    <i class="fas fa-star"></i> {{ product.rating|floatformat:1 }} ({{ product.reviews.count }} reviews)
+                </span>
+            </div>
+            
+            <!-- Price -->
+            <div class="mb-4">
+                {% if product.discount_price %}
+                    <h3 class="price">₹{{ product.discount_price }}</h3>
+                    <p class="old-price">Original Price: ₹{{ product.price }}</p>
+                    <p class="text-success"><strong>Save {{ product.get_discount_percentage }}%</strong></p>
+                {% else %}
+                    <h3 class="price">₹{{ product.price }}</h3>
+                {% endif %}
+            </div>
+            
+            <!-- Details -->
+            <div class="mb-4">
+                <div class="row">
+                    <div class="col-md-6">
+                        <p><strong>Unit:</strong> {{ product.get_unit_display }}</p>
+                        <p><strong>Strength:</strong> {{ product.strength|default:"N/A" }}</p>
+                        <p><strong>Manufacturer:</strong> {{ product.manufacturer }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong>Stock:</strong> 
+                            {% if product.stock > 0 %}
+                                <span class="badge bg-success">In Stock ({{ product.stock }})</span>
+                            {% else %}
+                                <span class="badge bg-danger">Out of Stock</span>
+                            {% endif %}
+                        </p>
+                        <p><strong>Expiry Date:</strong> {{ product.expiry_date|date:"M d, Y" }}</p>
+                        <p><strong>Requires Prescription:</strong>
+                            {% if product.requires_prescription %}
+                                <span class="badge bg-warning">Yes</span>
+                            {% else %}
+                                <span class="badge bg-success">No</span>
+                            {% endif %}
+                        </p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Description -->
+            <div class="mb-4">
+                <h5>Description</h5>
+                <p>{{ product.description }}</p>
+            </div>
+            
+            <!-- Add to Cart -->
+            {% if product.stock > 0 %}
+                <div class="mb-4">
+                    <div class="input-group mb-3" style="width: 200px;">
+                        <button class="btn btn-outline-secondary" type="button" onclick="decreaseQty()">-</button>
+                        <input type="number" id="quantity" class="form-control text-center" value="1" min="1" max="{{ product.stock }}">
+                        <button class="btn btn-outline-secondary" type="button" onclick="increaseQty()">+</button>
+                    </div>
+                    
+                    {% if user.is_authenticated %}
+                        <button class="btn btn-primary btn-lg" onclick="addToCart('{{ product.id }}')">
+                            <i class="fas fa-shopping-cart"></i> Add to Cart
+                        </button>
+                    {% else %}
+                        <a href="{% url 'login' %}" class="btn btn-primary btn-lg">
+                            <i class="fas fa-sign-in-alt"></i> Login to Buy
+                        </a>
+                    {% endif %}
+                </div>
+            {% endif %}
+            
+            <!-- Related Products -->
+            {% if related_products %}
+                <div class="divider mt-5">
+                    <h5>Related Products</h5>
+                    <div class="row">
+                        {% for rel_product in related_products %}
+                            <div class="col-md-6 mb-3">
+                                <div class="card product-card h-100">
+                                    <div class="product-image" style="height: 150px;">
+                                        {% if rel_product.image %}
+                                            <img src="{{ rel_product.image.url }}" alt="{{ rel_product.name }}">
+                                        {% else %}
+                                            <img src="https://via.placeholder.com/250?text=No+Image">
+                                        {% endif %}
+                                    </div>
+                                    <div class="card-body">
+                                        <h6 class="card-title">{{ rel_product.name }}</h6>
+                                        <p class="price">₹{{ rel_product.get_display_price }}</p>
+                                        <a href="{% url 'product_detail' rel_product.id %}" class="btn btn-sm btn-outline-primary w-100">
+                                            View
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+    
+    <!-- Reviews Section -->
+    <div class="divider"></div>
+    <div class="row">
+        <div class="col-md-8">
+            <h3 class="mb-4">Customer Reviews</h3>
+            
+            {% if user.is_authenticated %}
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0">Leave a Review</h5>
+                    </div>
+                    <div class="card-body">
+                        <form method="post" action="{% url 'product_detail' product.id %}">
+                            {% csrf_token %}
+                            {{ review_form.as_p }}
+                            <button type="submit" name="submit_review" class="btn btn-primary">
+                                <i class="fas fa-paper-plane"></i> Submit Review
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            {% endif %}
+            
+            {% if reviews %}
+                {% for review in reviews %}
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <strong>{{ review.user.get_full_name|default:review.user.username }}</strong>
+                                    <div class="stars">
+                                        {% for i in "12345" %}
+                                            {% if i|add:0 <= review.rating %}
+                                                <i class="fas fa-star"></i>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                                <small class="text-muted">{{ review.created_at|date:"M d, Y" }}</small>
+                            </div>
+                            <p class="mt-3">{{ review.comment }}</p>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <p class="text-muted">No reviews yet. Be the first to review this product!</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<script>
+function decreaseQty() {
+    let qty = document.getElementById('quantity');
+    if (qty.value > 1) qty.value = parseInt(qty.value) - 1;
+}
+
+function increaseQty() {
+    let qty = document.getElementById('quantity');
+    let max = parseInt(qty.max);
+    if (qty.value < max) qty.value = parseInt(qty.value) + 1;
+}
+
+function addToCart(productId) {
+    const quantity = parseInt(document.getElementById('quantity').value);
+    
+    fetch('{% url "add_to_cart" %}', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': '{{ csrf_token }}'
+        },
+        body: JSON.stringify({
+            product_id: productId,
+            quantity: quantity
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            alert(data.message);
+            window.location.href = '{% url "view_cart" %}';
+        } else {
+            alert('Error: ' + data.message);
+        }
+    })
+    .catch(error => console.error('Error:', error));
+}
+</script>
+{% endblock %}

@@ -1,0 +1,110 @@
+{% extends 'base.html' %}
+
+{% block title %}About Us - HealthPharma{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <h1 class="mb-5 text-center">About HealthPharma</h1>
+    
+    <!-- Company Info -->
+    <div class="row mb-5">
+        <div class="col-md-6">
+            {% if company.logo %}
+                <img src="{{ company.logo.url }}" alt="HealthPharma Logo" class="img-fluid rounded" style="max-height: 400px;">
+            {% else %}
+                <div style="background: var(--light-color); padding: 60px; text-align: center; border-radius: 10px;">
+                    <i class="fas fa-pills fa-5x" style="color: var(--primary-color);"></i>
+                </div>
+            {% endif %}
+        </div>
+        <div class="col-md-6">
+            {% if company %}
+                <h2>{{ company.company_name }}</h2>
+                <p class="lead text-muted">{{ company.about }}</p>
+                
+                <div class="mt-4">
+                    <h5>Contact Information</h5>
+                    <p>
+                        <i class="fas fa-phone" style="color: var(--primary-color); margin-right: 10px;"></i>
+                        <strong>Phone:</strong> {{ company.phone }}<br>
+                        <i class="fas fa-envelope" style="color: var(--primary-color); margin-right: 10px;"></i>
+                        <strong>Email:</strong> {{ company.email }}<br>
+                        <i class="fas fa-map-marker-alt" style="color: var(--primary-color); margin-right: 10px;"></i>
+                        <strong>Address:</strong> {{ company.address }}, {{ company.city }}, {{ company.state }} {{ company.zip_code }}
+                    </p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+    
+    <!-- Features -->
+    <section class="mb-5">
+        <h3 class="mb-4 text-center">Why Choose HealthPharma?</h3>
+        <div class="row">
+            <div class="col-md-6 mb-4">
+                <div class="card shadow h-100">
+                    <div class="card-body">
+                        <i class="fas fa-check-circle fa-2x" style="color: var(--primary-color); margin-bottom: 15px;"></i>
+                        <h5>Authentic Products</h5>
+                        <p>We guarantee 100% authentic medicines from verified manufacturers.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 mb-4">
+                <div class="card shadow h-100">
+                    <div class="card-body">
+                        <i class="fas fa-truck fa-2x" style="color: var(--primary-color); margin-bottom: 15px;"></i>
+                        <h5>Fast Delivery</h5>
+                        <p>Quick and reliable delivery to your doorstep within 24-48 hours.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 mb-4">
+                <div class="card shadow h-100">
+                    <div class="card-body">
+                        <i class="fas fa-lock fa-2x" style="color: var(--primary-color); margin-bottom: 15px;"></i>
+                        <h5>Secure Payments</h5>
+                        <p>Multiple safe payment options including Cash on Delivery, Online, and UPI.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 mb-4">
+                <div class="card shadow h-100">
+                    <div class="card-body">
+                        <i class="fas fa-headset fa-2x" style="color: var(--primary-color); margin-bottom: 15px;"></i>
+                        <h5>24/7 Support</h5>
+                        <p>Our dedicated customer support team is always available to help you.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 mb-4">
+                <div class="card shadow h-100">
+                    <div class="card-body">
+                        <i class="fas fa-certificate fa-2x" style="color: var(--primary-color); margin-bottom: 15px;"></i>
+                        <h5>Licensed & Certified</h5>
+                        <p>We are licensed and follow all regulatory requirements for online pharmacies.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 mb-4">
+                <div class="card shadow h-100">
+                    <div class="card-body">
+                        <i class="fas fa-file-prescription fa-2x" style="color: var(--primary-color); margin-bottom: 15px;"></i>
+                        <h5>Prescription Support</h5>
+                        <p>Easy prescription upload system for prescription-required medicines.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Call to Action -->
+    <section class="py-5 rounded" style="background: linear-gradient(135deg, var(--primary-color) 0%, #27ae60 100%); color: white; text-align: center;">
+        <h3 class="mb-4">Ready to Shop?</h3>
+        <p class="lead mb-4">Browse our wide range of authentic medicines and healthcare products.</p>
+        <a href="{% url 'product_list' %}" class="btn btn-light btn-lg">
+            <i class="fas fa-shopping-bag"></i> Start Shopping
+        </a>
+    </section>
+</div>
+{% endblock %}

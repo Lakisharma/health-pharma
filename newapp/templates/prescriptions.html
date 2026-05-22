@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+
+{% block title %}My Prescriptions - HealthPharma{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <h1 class="mb-4"><i class="fas fa-file-prescription"></i> My Prescriptions</h1>
+    
+    <div class="mb-4">
+        <a href="{% url 'upload_prescription' %}" class="btn btn-primary btn-lg">
+            <i class="fas fa-upload"></i> Upload New Prescription
+        </a>
+    </div>
+    
+    {% if prescriptions %}
+        <div class="row">
+            {% for prescription in prescriptions %}
+                <div class="col-md-6 mb-4">
+                    <div class="card shadow h-100">
+                        <div class="card-header">
+                            <h5 class="mb-0">{{ prescription.doctor_name }}</h5>
+                        </div>
+                        <div class="card-body">
+                            <p><strong>Date:</strong> {{ prescription.prescription_date|date:"M d, Y" }}</p>
+                            <p><strong>Uploaded:</strong> {{ prescription.uploaded_at|date:"M d, Y H:i" }}</p>
+                            <p><strong>Status:</strong> 
+                                {% if prescription.verified %}
+                                    <span class="badge bg-success">Verified</span>
+                                {% else %}
+                                    <span class="badge bg-warning">Pending Verification</span>
+                                {% endif %}
+                            </p>
+                            {% if prescription.notes %}
+                                <p><strong>Admin Notes:</strong> {{ prescription.notes }}</p>
+                            {% endif %}
+                        </div>
+                        <div class="card-footer bg-white">
+                            <a href="{{ prescription.file.url }}" class="btn btn-sm btn-outline-primary" target="_blank">
+                                <i class="fas fa-download"></i> Download
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="alert alert-info text-center" role="alert">
+            <i class="fas fa-info-circle"></i> No prescriptions uploaded yet.
+        </div>
+        <div class="text-center">
+            <a href="{% url 'upload_prescription' %}" class="btn btn-primary btn-lg">
+                <i class="fas fa-upload"></i> Upload Prescription
+            </a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

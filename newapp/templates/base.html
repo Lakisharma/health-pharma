@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}HealthPharma - Online Pharmacy{% endblock %}</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --primary-color: #2ecc71;
+            --secondary-color: #27ae60;
+            --dark-color: #2c3e50;
+            --light-color: #ecf0f1;
+            --border-radius: 12px;
+            --box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            --box-shadow-lg: 0 8px 24px rgba(0,0,0,0.12);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        html {
+            scroll-behavior: smooth;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: #333;
+            line-height: 1.6;
+            background-color: #f8f9fa;
+        }
+        
+        /* Navigation */
+        .navbar {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            box-shadow: var(--box-shadow-lg);
+            padding: 0.8rem 0;
+        }
+        
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 1.6rem;
+            color: white !important;
+            letter-spacing: 0.5px;
+        }
+        
+        .nav-link {
+            color: white !important;
+            margin: 0 8px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            font-size: 0.95rem;
+        }
+        
+        .nav-link:hover {
+            color: #ecf0f1 !important;
+            transform: translateY(-2px);
+        }
+        
+        .dropdown-menu {
+            border: none;
+            box-shadow: var(--box-shadow-lg);
+            border-radius: var(--border-radius);
+        }
+        
+        .dropdown-item:hover {
+            background-color: rgba(46, 204, 113, 0.1);
+            color: var(--primary-color);
+        }
+        
+        /* Main Content */
+        main {
+            min-height: calc(100vh - 200px);
+        }
+        
+        /* Hero Section */
+        .hero-section {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            color: white;
+            padding: 100px 20px;
+            text-align: center;
+            margin-bottom: 60px;
+            border-radius: 0;
+        }
+        
+        .hero-section h1 {
+            font-size: 3.2rem;
+            margin-bottom: 20px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+        
+        .hero-section p {
+            font-size: 1.2rem;
+            margin-bottom: 30px;
+            opacity: 0.95;
+        }
+        
+        /* Container Spacing */
+        .container {
+            padding-top: 30px;
+            padding-bottom: 30px;
+        }
+        
+        /* Cards */
+        .card {
+            border: none;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            height: 100%;
+        }
+        
+        .card:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--box-shadow-lg);
+        }
+        
+        .card-header {
+            border: none;
+            border-radius: var(--border-radius) var(--border-radius) 0 0;
+            padding: 1.5rem;
+            font-weight: 600;
+        }
+        
+        .card-body {
+            padding: 1.5rem;
+        }
+        
+        /* Feature Cards */
+        .feature-card {
+            text-align: center;
+            padding: 30px 20px;
+            border-radius: var(--border-radius);
+            background: white;
+            box-shadow: var(--box-shadow);
+            transition: all 0.4s ease;
+        }
+        
+        .feature-card:hover {
+            box-shadow: var(--box-shadow-lg);
+            transform: translateY(-5px);
+        }
+        
+        .feature-card i {
+            font-size: 3rem;
+            color: var(--primary-color);
+            margin-bottom: 15px;
+        }
+        
+        .feature-card h5 {
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: var(--dark-color);
+        }
+        
+        .feature-card p {
+            font-size: 0.95rem;
+            color: #666;
+        }
+        
+        /* Product Card */
+        .product-card {
+            position: relative;
+            height: 100%;
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            background: white;
+            box-shadow: var(--box-shadow);
+            transition: all 0.4s ease;
+        }
+        
+        .product-card:hover {
+            box-shadow: var(--box-shadow-lg);
+            transform: translateY(-8px);
+        }
+        
+        .product-image {
+            height: 280px;
+            overflow: hidden;
+            background: #f0f0f0;
+            position: relative;
+        }
+        
+        .product-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.4s ease;
+        }
+        
+        .product-card:hover .product-image img {
+            transform: scale(1.08);
+        }
+        
+        .discount-badge {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-weight: 700;
+            font-size: 0.85rem;
+            box-shadow: 0 2px 8px rgba(231, 76, 60, 0.3);
+        }
+        
+        .product-info {
+            padding: 20px;
+        }
+        
+        .product-name {
+            font-weight: 600;
+            font-size: 1.05rem;
+            margin-bottom: 5px;
+            color: var(--dark-color);
+        }
+        
+        .product-strength {
+            font-size: 0.85rem;
+            color: #888;
+            margin-bottom: 3px;
+        }
+        
+        .product-manufacturer {
+            font-size: 0.85rem;
+            color: #999;
+            margin-bottom: 12px;
+        }
+        
+        .price {
+            color: var(--primary-color);
+            font-size: 1.4rem;
+            font-weight: 700;
+        }
+        
+        .old-price {
+            text-decoration: line-through;
+            color: #999;
+            font-size: 0.95rem;
+            margin-left: 8px;
+        }
+        
+        /* Buttons */
+        .btn {
+            font-weight: 600;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+            border: none;
+            padding: 10px 24px;
+            font-size: 0.95rem;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            color: white;
+            box-shadow: 0 4px 12px rgba(46, 204, 113, 0.3);
+        }
+        
+        .btn-primary:hover {
+            background: linear-gradient(135deg, var(--secondary-color) 0%, #229d5f 100%);
+            color: white;
+            box-shadow: 0 6px 16px rgba(46, 204, 113, 0.4);
+            transform: translateY(-2px);
+        }
+        
+        .btn-outline-primary {
+            color: var(--primary-color);
+            border: 2px solid var(--primary-color);
+            background: transparent;
+        }
+        
+        .btn-outline-primary:hover {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+        
+        .btn-lg {
+            padding: 12px 32px;
+            font-size: 1.05rem;
+        }
+        
+        /* Footer */
+        footer {
+            background: linear-gradient(135deg, var(--dark-color) 0%, #34495e 100%);
+            color: white;
+            padding: 50px 20px 20px;
+            margin-top: 80px;
+            box-shadow: 0 -2px 8px rgba(0,0,0,0.1);
+        }
+        
+        footer h5, footer h6 {
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: white;
+        }
+        
+        footer a {
+            color: var(--primary-color);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+        
+        footer a:hover {
+            color: white;
+            text-decoration: underline;
+        }
+        
+        footer ul li {
+            margin-bottom: 10px;
+        }
+        
+        footer .fab, footer .fas {
+            margin-right: 12px;
+            transition: all 0.3s ease;
+        }
+        
+        footer a:hover .fab, footer a:hover .fas {
+            transform: translateY(-3px);
+        }
+        
+        /* Alert */
+        .alert {
+            border-radius: var(--border-radius);
+            border: none;
+            padding: 16px 20px;
+            font-weight: 500;
+            box-shadow: var(--box-shadow);
+        }
+        
+        .alert-danger {
+            background-color: #fadbd8;
+            color: #922b21;
+        }
+        
+        .alert-success {
+            background-color: #d5f4e6;
+            color: #145a32;
+        }
+        
+        .alert-info {
+            background-color: #d6eaf8;
+            color: #0c3c26;
+        }
+        
+        /* Form */
+        .form-control, .form-select {
+            border-radius: 6px;
+            border: 2px solid #e0e0e0;
+            padding: 12px 14px;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+        }
+        
+        .form-control:focus, .form-select:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.3rem rgba(46, 204, 113, 0.15);
+            background-color: white;
+        }
+        
+        input[type="text"].form-control,
+        input[type="email"].form-control,
+        input[type="password"].form-control,
+        input[type="phone"].form-control,
+        input[type="date"].form-control,
+        input[type="number"].form-control {
+            border-radius: 6px;
+            border: 2px solid #e0e0e0;
+            padding: 12px 14px;
+        }
+        
+        textarea.form-control {
+            resize: vertical;
+            min-height: 120px;
+            border-radius: 6px;
+            border: 2px solid #e0e0e0;
+            padding: 12px 14px;
+        }
+        
+        input[type="radio"],
+        input[type="checkbox"] {
+            margin-right: 8px;
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+        
+        .form-check-label {
+            margin-left: 8px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+        
+        .form-label {
+            font-weight: 600;
+            color: var(--dark-color);
+            margin-bottom: 10px;
+            font-size: 0.95rem;
+        }
+        
+        .form-group, .mb-3 {
+            margin-bottom: 20px;
+        }
+        
+        /* Rating */
+        .stars {
+            color: #f39c12;
+            font-size: 0.95rem;
+        }
+        
+        .rating-stars i {
+            margin-right: 2px;
+        }
+        
+        /* Divider */
+        .divider {
+            border-top: 2px solid #e0e0e0;
+            margin: 40px 0;
+        }
+        
+        /* Section Title */
+        .section-title {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: var(--dark-color);
+            margin-bottom: 40px;
+            padding-bottom: 15px;
+            border-bottom: 3px solid var(--primary-color);
+            display: inline-block;
+        }
+        
+        .section-subtitle {
+            font-size: 1.1rem;
+            color: #666;
+            margin-bottom: 30px;
+        }
+        
+        /* Page Content */
+        .page-header {
+            background: linear-gradient(135deg, rgba(46, 204, 113, 0.1) 0%, rgba(39, 174, 96, 0.05) 100%);
+            padding: 40px 0;
+            margin-bottom: 40px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .page-header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--dark-color);
+            margin: 0;
+        }
+        
+        /* Sidebar */
+        .sidebar {
+            background: white;
+            padding: 20px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            margin-bottom: 30px;
+        }
+        
+        .sidebar h5 {
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: var(--dark-color);
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero-section {
+                padding: 60px 15px;
+            }
+            
+            .hero-section h1 {
+                font-size: 2rem;
+            }
+            
+            .section-title {
+                font-size: 1.6rem;
+            }
+            
+            .navbar-brand {
+                font-size: 1.3rem;
+            }
+            
+            footer {
+                padding: 30px 15px 15px;
+            }
+            
+            .product-image {
+                height: 200px;
+            }
+        }
+    </style>
+    
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="{% url 'home' %}">
+                <i class="fas fa-pills"></i> HealthPharma
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'home' %}">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'product_list' %}">Products</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'about' %}">About</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'contact' %}">Contact</a>
+                    </li>
+                    
+                    {% if user.is_authenticated %}
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="userMenu" role="button" data-bs-toggle="dropdown">
+                                <i class="fas fa-user"></i> {{ user.username }}
+                            </a>
+                            <ul class="dropdown-menu" aria-labelledby="userMenu">
+                                <li><a class="dropdown-item" href="{% url 'user_dashboard' %}">Dashboard</a></li>
+                                <li><a class="dropdown-item" href="{% url 'user_profile' %}">Profile</a></li>
+                                <li><a class="dropdown-item" href="{% url 'my_prescriptions' %}">My Prescriptions</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="{% url 'logout' %}">Logout</a></li>
+                            </ul>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'view_cart' %}">
+                                <i class="fas fa-shopping-cart"></i> Cart
+                            </a>
+                        </li>
+                    {% else %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'login' %}">Login</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'register' %}">Register</a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- Messages -->
+    {% if messages %}
+        <div class="container mt-3">
+            {% for message in messages %}
+                <div class="alert alert-{% if message.tags %}{{ message.tags }}{% else %}info{% endif %} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+    
+    <!-- Main Content -->
+    {% block content %}{% endblock %}
+    
+    <!-- Footer -->
+    <footer class="mt-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-3 mb-4">
+                    <h5><i class="fas fa-pills"></i> HealthPharma</h5>
+                    <p>Your trusted online pharmacy for quality medicines and healthcare products.</p>
+                </div>
+                <div class="col-md-3 mb-4">
+                    <h6>Quick Links</h6>
+                    <ul class="list-unstyled">
+                        <li><a href="{% url 'home' %}">Home</a></li>
+                        <li><a href="{% url 'product_list' %}">Products</a></li>
+                        <li><a href="{% url 'about' %}">About Us</a></li>
+                        <li><a href="{% url 'contact' %}">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-3 mb-4">
+                    <h6>Contact Info</h6>
+                    <p>
+                        {% if company %}
+                            Phone: {{ company.phone }}<br>
+                            Email: {{ company.email }}<br>
+                            Address: {{ company.address }}
+                        {% endif %}
+                    </p>
+                </div>
+                <div class="col-md-3 mb-4">
+                    <h6>Follow Us</h6>
+                    <div>
+                        <a href="#"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-linkedin"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="text-center mt-4 border-top pt-4">
+                <p>&copy; 2024 HealthPharma. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+    
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

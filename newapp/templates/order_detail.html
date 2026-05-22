@@ -1,0 +1,129 @@
+{% extends 'base.html' %}
+
+{% block title %}Order {{ order.order_number }} - HealthPharma{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <h1 class="mb-4">Order {{ order.order_number }}</h1>
+    
+    <div class="row">
+        <!-- Order Details -->
+        <div class="col-md-8">
+            <div class="card shadow mb-4">
+                <div class="card-header" style="background: var(--primary-color); color: white;">
+                    <h5 class="mb-0">Order Information</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <p><strong>Order Date:</strong> {{ order.created_at|date:"M d, Y H:i" }}</p>
+                            <p><strong>Status:</strong> 
+                                <span class="badge bg-primary">{{ order.get_status_display }}</span>
+                            </p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong>Payment Method:</strong> {{ order.get_payment_method_display }}</p>
+                            <p><strong>Payment Status:</strong>
+                                <span class="badge bg-info">{{ order.payment_status }}</span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Order Items -->
+            <div class="card shadow mb-4">
+                <div class="card-header" style="background: var(--primary-color); color: white;">
+                    <h5 class="mb-0">Order Items</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Product</th>
+                                    <th>Quantity</th>
+                                    <th>Price</th>
+                                    <th>Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in order.items.all %}
+                                    <tr>
+                                        <td>
+                                            <strong>{{ item.product.name }}</strong><br>
+                                            <small class="text-muted">{{ item.product.strength }}</small>
+                                        </td>
+                                        <td>{{ item.quantity }}</td>
+                                        <td>₹{{ item.price }}</td>
+                                        <td>
+                                            <strong>₹{{ item.get_total }}</strong>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Shipping Address -->
+            <div class="card shadow">
+                <div class="card-header" style="background: var(--primary-color); color: white;">
+                    <h5 class="mb-0">Shipping Address</h5>
+                </div>
+                <div class="card-body">
+                    <p>
+                        <strong>{{ order.shipping_name }}</strong><br>
+                        {{ order.shipping_address }}<br>
+                        {{ order.shipping_city }}, {{ order.shipping_state }} {{ order.shipping_zip }}<br><br>
+                        <strong>Phone:</strong> {{ order.shipping_phone }}<br>
+                        <strong>Email:</strong> {{ order.shipping_email }}
+                    </p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Order Summary -->
+        <div class="col-md-4">
+            <div class="card shadow">
+                <div class="card-header" style="background: var(--primary-color); color: white;">
+                    <h5 class="mb-0">Order Summary</h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Subtotal:</span>
+                        <strong>₹{{ order.total_amount }}</strong>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Shipping:</span>
+                        <strong class="text-success">FREE</strong>
+                    </div>
+                    <hr>
+                    <div class="d-flex justify-content-between mb-3">
+                        <h5>Total</h5>
+                        <h5 class="price">₹{{ order.total_amount }}</h5>
+                    </div>
+                    
+                    <div class="alert alert-info" role="alert">
+                        <strong>Status:</strong> {{ order.get_status_display }}
+                    </div>
+                    
+                    {% if order.notes %}
+                        <div class="alert alert-secondary" role="alert">
+                            <strong>Your Notes:</strong><br>
+                            {{ order.notes }}
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="text-center mt-5">
+        <a href="{% url 'user_dashboard' %}" class="btn btn-outline-primary">
+            <i class="fas fa-arrow-left"></i> Back to Dashboard
+        </a>
+    </div>
+</div>
+{% endblock %}

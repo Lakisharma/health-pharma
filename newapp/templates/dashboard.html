@@ -1,0 +1,142 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard - HealthPharma{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <h1 class="mb-4"><i class="fas fa-tachometer-alt"></i> Dashboard</h1>
+    
+    <div class="row mb-4">
+        <div class="col-md-3 mb-3">
+            <div class="card text-center shadow">
+                <div class="card-body">
+                    <h3 style="color: var(--primary-color);">{{ orders.count }}</h3>
+                    <p class="text-muted">Total Orders</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card text-center shadow">
+                <div class="card-body">
+                    <h3 style="color: var(--primary-color);">{{ prescriptions.count }}</h3>
+                    <p class="text-muted">Prescriptions</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card text-center shadow">
+                <div class="card-body">
+                    <h3 style="color: var(--primary-color);">₹0</h3>
+                    <p class="text-muted">Total Spent</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card text-center shadow">
+                <div class="card-body">
+                    <h3 style="color: var(--primary-color);">{{ cart.get_item_count }}</h3>
+                    <p class="text-muted">Cart Items</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Quick Actions -->
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <a href="{% url 'user_profile' %}" class="btn btn-outline-primary w-100 mb-2">
+                <i class="fas fa-user"></i> Edit Profile
+            </a>
+        </div>
+        <div class="col-md-6">
+            <a href="{% url 'upload_prescription' %}" class="btn btn-outline-primary w-100 mb-2">
+                <i class="fas fa-upload"></i> Upload Prescription
+            </a>
+        </div>
+    </div>
+    
+    <div class="row">
+        <!-- Recent Orders -->
+        <div class="col-md-8 mb-4">
+            <div class="card shadow">
+                <div class="card-header" style="background: var(--primary-color); color: white;">
+                    <h5 class="mb-0">Recent Orders</h5>
+                </div>
+                <div class="card-body">
+                    {% if orders %}
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Order #</th>
+                                        <th>Date</th>
+                                        <th>Amount</th>
+                                        <th>Status</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for order in orders|slice:":5" %}
+                                        <tr>
+                                            <td><strong>{{ order.order_number }}</strong></td>
+                                            <td>{{ order.created_at|date:"M d, Y" }}</td>
+                                            <td>₹{{ order.total_amount }}</td>
+                                            <td>
+                                                <span class="badge bg-primary">{{ order.get_status_display }}</span>
+                                            </td>
+                                            <td>
+                                                <a href="{% url 'order_detail' order.id %}" class="btn btn-sm btn-outline-primary">
+                                                    View
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <p class="text-center text-muted">No orders yet. <a href="{% url 'product_list' %}">Start shopping!</a></p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <!-- My Prescriptions -->
+        <div class="col-md-4 mb-4">
+            <div class="card shadow">
+                <div class="card-header" style="background: var(--primary-color); color: white;">
+                    <h5 class="mb-0">My Prescriptions</h5>
+                </div>
+                <div class="card-body">
+                    {% if prescriptions %}
+                        <ul class="list-unstyled">
+                            {% for prescription in prescriptions|slice:":3" %}
+                                <li class="mb-3">
+                                    <p class="mb-1">
+                                        <strong>{{ prescription.doctor_name }}</strong>
+                                    </p>
+                                    <small class="text-muted">{{ prescription.prescription_date|date:"M d, Y" }}</small>
+                                    <br>
+                                    {% if prescription.verified %}
+                                        <span class="badge bg-success">Verified</span>
+                                    {% else %}
+                                        <span class="badge bg-warning">Pending</span>
+                                    {% endif %}
+                                </li>
+                            {% endfor %}
+                        </ul>
+                        <a href="{% url 'my_prescriptions' %}" class="btn btn-outline-primary btn-sm w-100">
+                            View All
+                        </a>
+                    {% else %}
+                        <p class="text-muted">No prescriptions uploaded yet.</p>
+                        <a href="{% url 'upload_prescription' %}" class="btn btn-primary btn-sm w-100">
+                            <i class="fas fa-upload"></i> Upload Now
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

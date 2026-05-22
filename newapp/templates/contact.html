@@ -1,0 +1,93 @@
+{% extends 'base.html' %}
+
+{% block title %}Contact Us - HealthPharma{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <h1 class="mb-5 text-center">Contact Us</h1>
+    
+    <div class="row mb-5">
+        <div class="col-md-4 mb-4">
+            <div class="card text-center shadow">
+                <div class="card-body">
+                    <i class="fas fa-map-marker-alt fa-3x" style="color: var(--primary-color); margin-bottom: 20px;"></i>
+                    <h5>Address</h5>
+                    {% if company %}
+                        <p>
+                            {{ company.address }}<br>
+                            {{ company.city }}, {{ company.state }} {{ company.zip_code }}
+                        </p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="card text-center shadow">
+                <div class="card-body">
+                    <i class="fas fa-phone fa-3x" style="color: var(--primary-color); margin-bottom: 20px;"></i>
+                    <h5>Phone</h5>
+                    {% if company %}
+                        <p><a href="tel:{{ company.phone }}">{{ company.phone }}</a></p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="card text-center shadow">
+                <div class="card-body">
+                    <i class="fas fa-envelope fa-3x" style="color: var(--primary-color); margin-bottom: 20px;"></i>
+                    <h5>Email</h5>
+                    {% if company %}
+                        <p><a href="mailto:{{ company.email }}">{{ company.email }}</a></p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow">
+                <div class="card-header" style="background: var(--primary-color); color: white;">
+                    <h5 class="mb-0">Send us a Message</h5>
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Name</label>
+                                {{ form.name }}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Email</label>
+                                {{ form.email }}
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Phone (Optional)</label>
+                            {{ form.phone }}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Subject</label>
+                            {{ form.subject }}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Message</label>
+                            {{ form.message }}
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary btn-lg w-100">
+                            <i class="fas fa-paper-plane"></i> Send Message
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

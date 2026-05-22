@@ -1,0 +1,169 @@
+{% extends 'base.html' %}
+
+{% block title %}Home - HealthPharma{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="hero-section">
+    <div class="container">
+        <h1>Welcome to HealthPharma</h1>
+        <p class="lead">Your trusted online pharmacy for quality medicines and healthcare products</p>
+        <a href="{% url 'product_list' %}" class="btn btn-outline-light btn-lg mt-3">
+            <i class="fas fa-search"></i> Shop Now
+        </a>
+    </div>
+</div>
+
+<!-- Features Section -->
+<section class="py-5" style="background-color: white;">
+    <div class="container">
+        <div class="row g-4">
+            <div class="col-md-3 col-sm-6">
+                <div class="feature-card">
+                    <i class="fas fa-truck"></i>
+                    <h5>Fast Delivery</h5>
+                    <p>Quick and reliable delivery to your doorstep</p>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="feature-card">
+                    <i class="fas fa-lock"></i>
+                    <h5>Secure Payments</h5>
+                    <p>Safe and secure payment options</p>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="feature-card">
+                    <i class="fas fa-certificate"></i>
+                    <h5>Verified Products</h5>
+                    <p>100% authentic medicines and products</p>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="feature-card">
+                    <i class="fas fa-headset"></i>
+                    <h5>24/7 Support</h5>
+                    <p>Always here to help you</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Featured Products -->
+<section class="py-5" style="background-color: #f8f9fa;">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="section-title">Featured Products</h2>
+            <p class="section-subtitle">Discover our most popular and highly-rated medicines</p>
+        </div>
+        
+        <div class="row g-4">
+            {% for product in featured_products %}
+                <div class="col-lg-3 col-md-4 col-sm-6">
+                    <div class="card product-card">
+                        <div class="product-image">
+                            {% if product.image %}
+                                <img src="{{ product.image.url }}" alt="{{ product.name }}">
+                            {% else %}
+                                <img src="https://via.placeholder.com/250?text=No+Image" alt="No Image">
+                            {% endif %}
+                            {% if product.discount_price %}
+                                <div class="discount-badge">-{{ product.get_discount_percentage }}%</div>
+                            {% endif %}
+                        </div>
+                        <div class="product-info">
+                            <h6 class="product-name">{{ product.name }}</h6>
+                            <p class="product-strength">{{ product.strength }}</p>
+                            <p class="product-manufacturer">{{ product.manufacturer }}</p>
+                            <div class="mb-3">
+                                {% if product.discount_price %}
+                                    <span class="price">₹{{ product.discount_price }}</span>
+                                    <span class="old-price">₹{{ product.price }}</span>
+                                {% else %}
+                                    <span class="price">₹{{ product.price }}</span>
+                                {% endif %}
+                            </div>
+                            <div class="stars mb-3">
+                                <i class="fas fa-star"></i> {{ product.rating|floatformat:1 }} (0 reviews)
+                            </div>
+                            {% if product.stock > 0 %}
+                                <a href="{% url 'product_detail' product.id %}" class="btn btn-primary btn-sm w-100">
+                                    <i class="fas fa-eye"></i> View Details
+                                </a>
+                            {% else %}
+                                <button class="btn btn-secondary btn-sm w-100" disabled>Out of Stock</button>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            {% empty %}
+                <div class="col-12">
+                    <p class="text-center text-muted">No products available yet.</p>
+                </div>
+            {% endfor %}
+        </div>
+        
+        <div class="text-center mt-5">
+            <a href="{% url 'product_list' %}" class="btn btn-primary btn-lg">
+                <i class="fas fa-shopping-bag"></i> View All Products
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- Categories -->
+<section class="py-5" style="background-color: white;">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="section-title">Shop by Category</h2>
+            <p class="section-subtitle">Find medicines and healthcare products by category</p>
+        </div>
+        
+        <div class="row g-4">
+            {% for category in categories %}
+                <div class="col-lg-4 col-md-6">
+                    <div class="card category-card">
+                        <div class="card-body">
+                            {% if category.image %}
+                                <img src="{{ category.image.url }}" alt="{{ category.name }}" height="160" class="mb-3" style="object-fit: cover; width: 100%; border-radius: 8px;">
+                            {% else %}
+                                <div class="mb-3" style="text-align: center;">
+                                    <i class="fas fa-folder fa-4x" style="color: var(--primary-color);"></i>
+                                </div>
+                            {% endif %}
+                            <h5 class="card-title" style="font-weight: 600; margin: 15px 0 10px;">{{ category.name }}</h5>
+                            <p class="card-text" style="font-size: 0.95rem; color: #666;">{{ category.description|truncatewords:10 }}</p>
+                            <a href="{% url 'product_list' %}?category={{ category.name }}" class="btn btn-outline-primary w-100">
+                                <i class="fas fa-arrow-right"></i> Browse
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            {% empty %}
+                <div class="col-12">
+                    <p class="text-center text-muted">No categories available.</p>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- Call to Action -->
+<section class="py-5" style="background: linear-gradient(135deg, var(--primary-color) 0%, #27ae60 100%); color: white;">
+    <div class="container text-center">
+        <h2 class="mb-3" style="font-size: 2rem; font-weight: 700;">Upload Your Prescription</h2>
+        <p class="lead mb-4" style="font-size: 1.1rem; opacity: 0.95;">Need prescription-only medicines? Upload your prescription and we'll verify it quickly.</p>
+        {% if user.is_authenticated %}
+            <a href="{% url 'upload_prescription' %}" class="btn btn-light btn-lg" style="margin-top: 10px;">
+                <i class="fas fa-upload"></i> Upload Prescription
+            </a>
+        {% else %}
+            <a href="{% url 'register' %}" class="btn btn-light btn-lg" style="margin-top: 10px;">
+                <i class="fas fa-user-plus"></i> Register Now
+            </a>
+        {% endif %}
+    </div>
+</section>
+
+{% endblock %}

@@ -84,4 +84,7 @@ urlpatterns = [
     
     # Company Settings
     path('admin-company-settings/', views.admin_company_settings, name='admin_company_settings'),
+    
+    # Notifications
+    path('admin-notifications/mark-read/', views.admin_mark_notifications_read, name='admin_mark_notifications_read'),
 ]

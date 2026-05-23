@@ -10,7 +10,7 @@ import json
 from datetime import datetime
 from .models import (
     CompanyInfo, Category, Product, Review, Prescription, Cart, CartItem, 
-    Order, OrderItem, ContactMessage
+    Order, OrderItem, ContactMessage, Notification
 )
 from .forms import (
     UserRegisterForm, UserLoginForm, UserProfileForm, ReviewForm, 
@@ -355,6 +355,14 @@ def checkout(request):
             
             # Clear cart
             cart.items.all().delete()
+            
+            # Create admin notification
+            Notification.objects.create(
+                title="New Order Received",
+                message=f"Order {order.order_number} has been placed by {order.shipping_name} for ₹{order.total_amount}.",
+                order=order,
+                is_admin=True
+            )
             
             messages.success(request, f'Order {order.order_number} created successfully!')
             return redirect('order_confirmation', order_id=order.id)
@@ -1002,3 +1010,14 @@ def admin_company_settings(request):
         form = CompanyInfoForm(instance=company)
         
     return render(request, 'admin/company_settings.html', {'form': form})
+
+
+@login_required(login_url='login')
+def admin_mark_notifications_read(request):
+    """Mark all admin notifications as read"""
+    if not request.user.is_staff:
+        return redirect('admin_login')
+    
+    Notification.objects.filter(is_admin=True, is_read=False).update(is_read=True)
+    messages.success(request, 'All notifications marked as read!')
+    return redirect(request.META.get('HTTP_REFERER', 'admin_dashboard'))

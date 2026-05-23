@@ -233,3 +233,20 @@ class ContactMessage(models.Model):
     
     def __str__(self):
         return f"Message from {self.name}"
+
+
+# Admin Notifications
+class Notification(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    title = models.CharField(max_length=200)
+    message = models.TextField()
+    is_admin = models.BooleanField(default=True)
+    is_read = models.BooleanField(default=False)
+    order = models.ForeignKey(Order, on_delete=models.SET_NULL, null=True, blank=True, related_name='notifications')
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"{self.title} - Read: {self.is_read}"

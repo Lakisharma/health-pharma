@@ -1,7 +1,7 @@
 from django.contrib import admin
 from .models import (
     CompanyInfo, Category, Product, Review, Prescription, Cart, CartItem,
-    Order, OrderItem, ContactMessage
+    Order, OrderItem, ContactMessage, Notification
 )
 
 
@@ -113,3 +113,11 @@ class ContactMessageAdmin(admin.ModelAdmin):
     
     def has_delete_permission(self, request, obj=None):
         return True
+
+
+@admin.register(Notification)
+class NotificationAdmin(admin.ModelAdmin):
+    list_display = ['title', 'is_read', 'order', 'created_at']
+    list_filter = ['is_read', 'is_admin', 'created_at']
+    search_fields = ['title', 'message', 'order__order_number']
+    readonly_fields = ['created_at']

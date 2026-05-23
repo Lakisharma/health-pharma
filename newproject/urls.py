@@ -19,8 +19,11 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 
+from django.views.generic import RedirectView
+
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    path('admin/', RedirectView.as_view(url='/admin-login/', permanent=True)),
+    path('django-admin/', admin.site.urls),
     path('', include('newapp.urls')),
 ]
 

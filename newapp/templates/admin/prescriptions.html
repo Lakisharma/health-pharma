@@ -1,0 +1,67 @@
+{% extends 'admin/base_admin.html' %}
+
+{% block title %}Manage Prescriptions - HealthPharma Admin{% endblock %}
+{% block page_title %}Prescription Verification Workbench{% endblock %}
+
+{% block admin_content %}
+<div class="glass-card p-4">
+    <!-- Header with statistics -->
+    <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3 mb-4">
+        <h5 class="mb-0"><i class="fas fa-file-prescription text-accent me-2"></i> Client Prescriptions</h5>
+        
+        <!-- Filters -->
+        <div class="d-flex gap-2">
+            <a href="{% url 'admin_prescriptions' %}" class="btn {% if not filter_status %}btn-accent{% else %}btn-glass{% endif %} btn-sm">All</a>
+            <a href="{% url 'admin_prescriptions' %}?status=pending" class="btn {% if filter_status == 'pending' %}btn-accent{% else %}btn-glass{% endif %} btn-sm">Pending Verification</a>
+            <a href="{% url 'admin_prescriptions' %}?status=approved" class="btn {% if filter_status == 'approved' %}btn-accent{% else %}btn-glass{% endif %} btn-sm">Approved</a>
+        </div>
+    </div>
+
+    <!-- Table -->
+    <div class="table-responsive">
+        <table class="table table-dark table-hover align-middle mb-0" style="background: transparent;">
+            <thead>
+                <tr class="text-muted" style="border-bottom: 2px solid var(--border-color);">
+                    <th>Customer Account</th>
+                    <th>Doctor Details</th>
+                    <th>Prescription Date</th>
+                    <th>Date Uploaded</th>
+                    <th>Verification Status</th>
+                    <th style="width: 150px;" class="text-end">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for rx in prescriptions %}
+                <tr style="border-bottom: 1px solid var(--border-color);">
+                    <td class="font-weight-bold">
+                        <div>{{ rx.user.username }}</div>
+                        <small class="text-muted">{{ rx.user.email }}</small>
+                    </td>
+                    <td>Dr. {{ rx.doctor_name }}</td>
+                    <td>{{ rx.prescription_date|date:"d M Y" }}</td>
+                    <td>{{ rx.uploaded_at|date:"d M Y h:i A" }}</td>
+                    <td>
+                        {% if rx.is_verified %}
+                        <span class="badge-pill bg-glass-success"><i class="fas fa-check-circle me-1"></i> Verified / Approved</span>
+                        {% else %}
+                        <span class="badge-pill bg-glass-danger"><i class="fas fa-clock me-1"></i> Pending Verification</span>
+                        {% endif %}
+                    </td>
+                    <td class="text-end">
+                        <div class="d-flex justify-content-end gap-2">
+                            <a href="{% url 'admin_prescription_detail' rx.id %}" class="btn btn-glass btn-sm d-flex align-items-center gap-2">
+                                <i class="fas fa-user-shield text-info"></i> Verify Workbench
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" class="text-center text-muted py-4">No prescriptions found under the selected category</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

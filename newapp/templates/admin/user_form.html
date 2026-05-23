@@ -1,0 +1,72 @@
+{% extends 'admin/base_admin.html' %}
+
+{% block title %}Edit User Privilege - HealthPharma Admin{% endblock %}
+{% block page_title %}Account Controls: {{ form.instance.username }}{% endblock %}
+
+{% block admin_content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8 col-xl-6">
+        <div class="glass-card p-5">
+            <h5 class="mb-4 text-accent"><i class="fas fa-user-cog me-2"></i> Role & Permissions Audit</h5>
+            
+            <form method="post">
+                {% csrf_token %}
+                
+                <div class="row g-3">
+                    <div class="col-md-6 mb-3">
+                        <label for="{{ form.first_name.id_for_label }}" class="form-label">First Name</label>
+                        {{ form.first_name }}
+                        {% if form.first_name.errors %}
+                            <div class="text-danger mt-1 small">{{ form.first_name.errors }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="col-md-6 mb-3">
+                        <label for="{{ form.last_name.id_for_label }}" class="form-label">Last Name</label>
+                        {{ form.last_name }}
+                        {% if form.last_name.errors %}
+                            <div class="text-danger mt-1 small">{{ form.last_name.errors }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="col-12 mb-4">
+                        <label for="{{ form.email.id_for_label }}" class="form-label"><i class="fas fa-envelope"></i> Email Address</label>
+                        {{ form.email }}
+                        {% if form.email.errors %}
+                            <div class="text-danger mt-1 small">{{ form.email.errors }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <hr class="bg-secondary mb-4">
+                    
+                    <div class="col-12 mb-3">
+                        <div class="form-check form-switch">
+                            {{ form.is_staff }}
+                            <label class="form-check-label text-danger font-weight-bold" for="{{ form.is_staff.id_for_label }}">
+                                <i class="fas fa-user-shield me-1"></i> Give Staff / Admin Privileges
+                            </label>
+                            <small class="form-text text-muted d-block mt-1">Gives access to this custom admin control panel.</small>
+                        </div>
+                    </div>
+                    
+                    <div class="col-12 mb-4">
+                        <div class="form-check form-switch">
+                            {{ form.is_active }}
+                            <label class="form-check-label" for="{{ form.is_active.id_for_label }}">
+                                Account Active Status (Uncheck to ban/suspend user)
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="d-flex align-items-center justify-content-end gap-3 mt-5">
+                    <a href="{% url 'admin_users' %}" class="btn btn-glass">Cancel</a>
+                    <button type="submit" class="btn btn-accent">
+                        <i class="fas fa-save me-2"></i> Save Permissions
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

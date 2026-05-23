@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invoice - {{ order.order_number }}</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap');
+        
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: #f8fafc;
+            color: #1e293b;
+            padding: 30px;
+        }
+        
+        .invoice-container {
+            max-width: 850px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            padding: 40px;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+            border: 1px solid #e2e8f0;
+        }
+        
+        .brand-color {
+            color: #2ecc71;
+        }
+        
+        .table th {
+            background-color: #f8fafc;
+            font-weight: 600;
+            color: #475569;
+        }
+        
+        .invoice-title {
+            font-size: 2.2rem;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            color: #0f172a;
+        }
+        
+        .btn-print {
+            background-color: #2ecc71;
+            border: none;
+            color: white;
+            padding: 12px 24px;
+            font-weight: 600;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(46, 204, 113, 0.2);
+        }
+        .btn-print:hover {
+            background-color: #27ae60;
+            transform: translateY(-1px);
+            box-shadow: 0 6px 16px rgba(46, 204, 113, 0.3);
+            color: white;
+        }
+        
+        .divider {
+            border-top: 2px solid #f1f5f9;
+            margin: 30px 0;
+        }
+        
+        /* Print Specific Optimization Styles */
+        @media print {
+            body {
+                background-color: #ffffff;
+                padding: 0;
+                color: #000000;
+            }
+            .invoice-container {
+                box-shadow: none;
+                border: none;
+                padding: 0;
+                margin: 0;
+                max-width: 100%;
+            }
+            .no-print {
+                display: none !important;
+            }
+            .print-border-none {
+                border: none !important;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Printable container -->
+    <div class="invoice-container">
+        
+        <!-- Action buttons row (hides during print) -->
+        <div class="row mb-4 no-print align-items-center">
+            <div class="col-6">
+                <a href="{% url 'order_detail' order.id %}" class="btn btn-outline-secondary btn-sm" style="border-radius: 8px;">
+                    <i class="fas fa-arrow-left me-1"></i> Back to Details
+                </a>
+            </div>
+            <div class="col-6 text-end">
+                <button onclick="window.print()" class="btn btn-print">
+                    <i class="fas fa-print me-2"></i> Print / Save as PDF
+                </button>
+            </div>
+        </div>
+        
+        <!-- Header: Logo & Invoice details -->
+        <div class="row align-items-center mb-4">
+            <div class="col-md-6 mb-3 mb-md-0">
+                <div class="d-flex align-items-center gap-2">
+                    <img src="https://content.jdmagicbox.com/comp/delhi/i5/011pxx11.xx11.241029190520.a4i5/logo/healeaf-pharma-pvt-ltd-patparganj-delhi-pharmaceutical-dealers-g3pzvut.jpg" 
+                         alt="Healeaf Pharma Logo" 
+                         class="rounded-circle bg-white p-0.5" 
+                         style="width: 55px; height: 55px; object-fit: cover; border: 2px solid #e2e8f0; mix-blend-mode: multiply;">
+                    <div>
+                        <h4 class="mb-0 font-weight-bold text-dark" style="font-weight: 700; letter-spacing: -0.5px;">Healeaf Pharma</h4>
+                        <small class="text-muted">Trusted Online Pharmacy</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 text-md-end">
+                <h1 class="invoice-title mb-0">INVOICE</h1>
+                <span class="text-muted">Invoice #:</span> <strong class="text-dark">{{ order.order_number }}</strong>
+            </div>
+        </div>
+        
+        <div class="divider"></div>
+        
+        <!-- Metadata: Billing/Shipping & Invoice details -->
+        <div class="row mb-4">
+            <div class="col-md-6 mb-4 mb-md-0">
+                <h6 class="text-uppercase text-muted font-weight-bold mb-3" style="font-size: 0.8rem; letter-spacing: 1px;">Supplier / Issuer</h6>
+                <h5 class="text-dark font-weight-bold mb-1">{{ company.company_name|default:"Healeaf Pharma Pvt Ltd" }}</h5>
+                <p class="text-muted mb-0 small">
+                    {{ company.address|default:"Patparganj, Delhi, India" }}<br>
+                    <strong>Phone:</strong> {{ company.phone|default:"+91 9991954561" }}<br>
+                    <strong>Email:</strong> {{ company.email|default:"support@healeafpharma.com" }}
+                </p>
+            </div>
+            <div class="col-md-6 text-md-end">
+                <h6 class="text-uppercase text-muted font-weight-bold mb-3" style="font-size: 0.8rem; letter-spacing: 1px;">Customer Invoice Info</h6>
+                <p class="text-muted mb-0 small">
+                    <strong>Invoice Date:</strong> {{ order.created_at|date:"d M, Y H:i" }}<br>
+                    <strong>Payment Method:</strong> {{ order.get_payment_method_display }}<br>
+                    <strong>Payment Status:</strong> <span class="badge bg-light text-dark border font-weight-normal">{{ order.payment_status }}</span>
+                </p>
+            </div>
+        </div>
+        
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card p-3 border-0" style="background-color: #f8fafc; border-radius: 12px;">
+                    <h6 class="text-uppercase text-muted font-weight-bold mb-2" style="font-size: 0.75rem; letter-spacing: 1px;">Deliver To:</h6>
+                    <h6 class="text-dark font-weight-bold mb-1">{{ order.shipping_name }}</h6>
+                    <p class="text-muted mb-0 small">
+                        {{ order.shipping_address }}<br>
+                        {{ order.shipping_city }}, {{ order.shipping_state }} - {{ order.shipping_zip }}<br>
+                        <strong>Phone:</strong> {{ order.shipping_phone }} | <strong>Email:</strong> {{ order.shipping_email }}
+                    </p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Table: Ordered Items -->
+        <h6 class="text-uppercase text-muted font-weight-bold mb-3" style="font-size: 0.8rem; letter-spacing: 1px;">Order Summary Items</h6>
+        <div class="table-responsive mb-4">
+            <table class="table align-middle">
+                <thead>
+                    <tr>
+                        <th scope="col" class="border-bottom-0">Product details</th>
+                        <th scope="col" class="text-center border-bottom-0" style="width: 100px;">Rate</th>
+                        <th scope="col" class="text-center border-bottom-0" style="width: 100px;">Quantity</th>
+                        <th scope="col" class="text-end border-bottom-0" style="width: 150px;">Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in order.items.all %}
+                        <tr>
+                            <td class="py-3">
+                                <h6 class="mb-0 text-dark font-weight-bold" style="font-size: 0.95rem;">{{ item.product.name }}</h6>
+                                <small class="text-muted">{{ item.product.strength|default:item.product.generic_name }}</small>
+                            </td>
+                            <td class="text-center py-3 text-muted">₹{{ item.price }}</td>
+                            <td class="text-center py-3 text-muted">{{ item.quantity }}</td>
+                            <td class="text-end py-3 font-weight-bold text-dark">₹{{ item.get_total }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- Totals breakdown -->
+        <div class="row justify-content-end mb-4">
+            <div class="col-md-5">
+                <div class="d-flex justify-content-between mb-2">
+                    <span class="text-muted small">Subtotal</span>
+                    <strong class="text-dark">₹{{ order.total_amount }}</strong>
+                </div>
+                <div class="d-flex justify-content-between mb-2">
+                    <span class="text-muted small">Shipping Fee</span>
+                    <strong class="text-success small">FREE</strong>
+                </div>
+                <div class="divider my-2"></div>
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <h6 class="mb-0 font-weight-bold text-dark">Grand Total</h6>
+                    <h5 class="mb-0 text-success font-weight-bold brand-color" style="font-size: 1.4rem;">₹{{ order.total_amount }}</h5>
+                </div>
+            </div>
+        </div>
+        
+        <div class="divider"></div>
+        
+        <!-- Footer / Terms -->
+        <div class="text-center text-muted small mt-4">
+            <p class="mb-1">Thank you for ordering with <strong>Healeaf Pharma</strong>!</p>
+            <p class="mb-0" style="font-size: 0.75rem;">This is a computer-generated tax invoice. No signature is required.</p>
+        </div>
+        
+    </div>
+
+    <!-- Print immediately if triggered in background/auto -->
+    <script>
+        window.addEventListener('DOMContentLoaded', () => {
+            // Auto open browser print dialog immediately
+            setTimeout(() => {
+                window.print();
+            }, 300);
+        });
+    </script>
+</body>
+</html>

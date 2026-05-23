@@ -1,0 +1,60 @@
+{% extends 'admin/base_admin.html' %}
+
+{% block title %}{% if form.instance.pk %}Edit Category{% else %}Add Category{% endif %} - HealthPharma Admin{% endblock %}
+{% block page_title %}{% if form.instance.pk %}Edit Category: {{ form.instance.name }}{% else %}Create New Category{% endif %}{% endblock %}
+
+{% block admin_content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8 col-xl-6">
+        <div class="glass-card p-5">
+            <h5 class="mb-4 text-accent"><i class="fas fa-layer-group me-2"></i> Category Details</h5>
+            
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                
+                <div class="mb-4">
+                    <label for="{{ form.name.id_for_label }}" class="form-label">
+                        <i class="fas fa-tag"></i> Category Name
+                    </label>
+                    {{ form.name }}
+                    {% if form.name.errors %}
+                        <div class="text-danger mt-1 small">{{ form.name.errors }}</div>
+                    {% endif %}
+                </div>
+                
+                <div class="mb-4">
+                    <label for="{{ form.description.id_for_label }}" class="form-label">
+                        <i class="fas fa-align-left"></i> Description
+                    </label>
+                    {{ form.description }}
+                    {% if form.description.errors %}
+                        <div class="text-danger mt-1 small">{{ form.description.errors }}</div>
+                    {% endif %}
+                </div>
+                
+                <div class="mb-4">
+                    <label for="{{ form.image.id_for_label }}" class="form-label">
+                        <i class="fas fa-image"></i> Category Banner Image
+                    </label>
+                    {% if form.instance.image %}
+                        <div class="mb-2">
+                            <img src="{{ form.instance.image.url }}" alt="{{ form.instance.name }}" class="rounded img-thumbnail" style="max-height: 120px; background-color: var(--bg-primary);">
+                        </div>
+                    {% endif %}
+                    {{ form.image }}
+                    {% if form.image.errors %}
+                        <div class="text-danger mt-1 small">{{ form.image.errors }}</div>
+                    {% endif %}
+                </div>
+                
+                <div class="d-flex align-items-center justify-content-end gap-3 mt-5">
+                    <a href="{% url 'admin_categories' %}" class="btn btn-glass">Cancel</a>
+                    <button type="submit" class="btn btn-accent">
+                        <i class="fas fa-save me-2"></i> Save Category
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

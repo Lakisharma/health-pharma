@@ -1,0 +1,115 @@
+{% extends 'admin/base_admin.html' %}
+
+{% block title %}Verify Prescription - HealthPharma Admin{% endblock %}
+{% block page_title %}Verify Prescription Workbench{% endblock %}
+
+{% block admin_content %}
+<div class="row g-4">
+    <!-- Image/File Viewer Panel -->
+    <div class="col-xl-7 col-lg-6">
+        <div class="glass-card p-4 h-100 d-flex flex-column">
+            <h5 class="mb-3 text-accent"><i class="fas fa-file-image me-2"></i> Prescription Document Viewer</h5>
+            
+            <div class="flex-grow-1 p-3 rounded text-center d-flex align-items-center justify-content-center" style="background-color: #05070c; border: 1px solid var(--border-color); min-height: 450px;">
+                {% if prescription.file %}
+                    {% if prescription.file.url|slice:"-4:" == ".pdf" or prescription.file.url|slice:"-4:" == ".PDF" %}
+                        <div class="w-100 h-100">
+                            <object data="{{ prescription.file.url }}" type="application/pdf" width="100%" height="500px">
+                                <p class="text-muted">PDF viewer is not supported by your browser. <a href="{{ prescription.file.url }}" class="btn btn-accent btn-sm mt-2" download>Download PDF</a></p>
+                            </object>
+                        </div>
+                    {% else %}
+                        <img src="{{ prescription.file.url }}" alt="Prescription Uploaded by Client" class="img-fluid rounded" style="max-height: 500px; object-fit: contain; box-shadow: 0 4px 12px rgba(0,0,0,0.5);">
+                    {% endif %}
+                {% else %}
+                    <div class="text-center text-muted py-5">
+                        <i class="fas fa-file-excel fs-1 mb-3"></i>
+                        <p>No document attachment found on this record.</p>
+                    </div>
+                {% endif %}
+            </div>
+            
+            {% if prescription.file %}
+            <div class="mt-3 text-end">
+                <a href="{{ prescription.file.url }}" target="_blank" class="btn btn-glass btn-sm">
+                    <i class="fas fa-external-link-alt me-2"></i> Open in New Tab
+                </a>
+                <a href="{{ prescription.file.url }}" download class="btn btn-accent btn-sm">
+                    <i class="fas fa-download me-2"></i> Download File
+                </a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    
+    <!-- Verdict / Review Panel -->
+    <div class="col-xl-5 col-lg-6">
+        <div class="glass-card p-4 h-100 d-flex flex-column justify-content-between">
+            <div>
+                <h5 class="mb-4 text-accent"><i class="fas fa-user-shield me-2"></i> Audit Workbench</h5>
+                
+                <!-- Client Meta info -->
+                <div class="p-3 rounded mb-4" style="background-color: rgba(255, 255, 255, 0.02); border: 1px solid var(--border-color);">
+                    <h6 class="text-muted mb-3">CUSTOMER META-INFORMATION</h6>
+                    <table class="table table-sm table-dark table-borderless mb-0" style="background: transparent;">
+                        <tr>
+                            <td class="text-muted" style="width: 140px;">Customer Account:</td>
+                            <td class="font-weight-bold">{{ prescription.user.username }}</td>
+                        </tr>
+                        <tr>
+                            <td class="text-muted">Doctor Full Name:</td>
+                            <td class="font-weight-bold">Dr. {{ prescription.doctor_name }}</td>
+                        </tr>
+                        <tr>
+                            <td class="text-muted">Prescription Date:</td>
+                            <td class="font-weight-bold">{{ prescription.prescription_date|date:"d F Y" }}</td>
+                        </tr>
+                        <tr>
+                            <td class="text-muted">Uploaded Date:</td>
+                            <td class="font-weight-bold">{{ prescription.uploaded_at|date:"d M Y h:i A" }}</td>
+                        </tr>
+                    </table>
+                </div>
+
+                <div class="p-3 rounded mb-4" style="background-color: rgba(255, 255, 255, 0.02); border: 1px solid var(--border-color);">
+                    <h6 class="text-muted mb-2">CURRENT VERIFICATION STATUS</h6>
+                    {% if prescription.is_verified %}
+                        <div class="text-success fs-5 font-weight-bold">
+                            <i class="fas fa-check-circle me-2"></i> Approved & Verified
+                        </div>
+                        <small class="text-muted">Verified by: {{ prescription.verified_by.username }}</small>
+                    {% else %}
+                        <div class="text-danger fs-5 font-weight-bold">
+                            <i class="fas fa-times-circle me-2"></i> Pending Pharmacist Approval
+                        </div>
+                        <small class="text-muted">Awaiting decision...</small>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Decision form -->
+            <form action="{% url 'admin_approve_prescription' prescription.id %}" method="post" class="mt-4">
+                {% csrf_token %}
+                
+                <div class="mb-4">
+                    <label for="review_notes" class="form-label"><i class="fas fa-comment-dots"></i> Reviewer Verification Notes</label>
+                    <textarea name="notes" id="review_notes" rows="4" class="form-control" placeholder="Write reason for approval/rejection or instructions for processing (e.g. 'Dosage matches requested items').">{{ prescription.notes }}</textarea>
+                </div>
+                
+                <div class="row g-2">
+                    <div class="col-6">
+                        <button type="submit" name="action" value="reject" class="btn btn-glass text-danger w-100 py-3" onclick="return confirm('Are you sure you want to reject and remove this prescription?');">
+                            <i class="fas fa-trash-alt me-2"></i> Reject & Delete
+                        </button>
+                    </div>
+                    <div class="col-6">
+                        <button type="submit" name="action" value="approve" class="btn btn-accent w-100 py-3">
+                            <i class="fas fa-check me-2"></i> Approve & Verify
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

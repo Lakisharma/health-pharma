@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Healeaf Pharma - Custom Admin Panel{% endblock %}</title>
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts: Outfit -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-primary: #0b0f19;
+            --bg-secondary: #111827;
+            --bg-card: rgba(17, 24, 39, 0.7);
+            --border-color: rgba(255, 255, 255, 0.08);
+            --primary-accent: #10b981; /* Emerald */
+            --primary-accent-glow: rgba(16, 185, 129, 0.15);
+            --text-main: #f3f4f6;
+            --text-muted: #9ca3af;
+            --sidebar-width: 260px;
+            --header-height: 70px;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-main);
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+        }
+
+        /* Scrollbar styling */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--bg-primary);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #374151;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--primary-accent);
+        }
+
+        /* Glassmorphism Styles */
+        .glass-card {
+            background: var(--bg-card);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .glass-card:hover {
+            border-color: rgba(16, 185, 129, 0.3);
+            box-shadow: 0 8px 32px 0 rgba(16, 185, 129, 0.05);
+            transform: translateY(-2px);
+        }
+
+        /* Sidebar Layout */
+        .sidebar {
+            width: var(--sidebar-width);
+            height: 100vh;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+            background: #090d16;
+            border-right: 1px solid var(--border-color);
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar-brand {
+            height: var(--header-height);
+            display: flex;
+            align-items: center;
+            padding: 0 24px;
+            border-bottom: 1px solid var(--border-color);
+            color: var(--primary-accent);
+            font-size: 1.4rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            text-decoration: none;
+        }
+        
+        .sidebar-brand i {
+            margin-right: 10px;
+            filter: drop-shadow(0 0 8px var(--primary-accent));
+        }
+
+        .sidebar-menu {
+            list-style: none;
+            padding: 20px 12px;
+            margin: 0;
+            flex-grow: 1;
+            overflow-y: auto;
+        }
+
+        .sidebar-item {
+            margin-bottom: 6px;
+        }
+
+        .sidebar-link {
+            display: flex;
+            align-items: center;
+            padding: 12px 16px;
+            color: var(--text-muted);
+            text-decoration: none;
+            border-radius: 12px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar-link i {
+            width: 24px;
+            font-size: 1.15rem;
+            margin-right: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar-link:hover, .sidebar-link.active {
+            color: #fff;
+            background: rgba(255, 255, 255, 0.03);
+            border-left: 3px solid var(--primary-accent);
+            padding-left: 13px;
+        }
+
+        .sidebar-link.active i {
+            color: var(--primary-accent);
+            filter: drop-shadow(0 0 6px var(--primary-accent));
+        }
+
+        .sidebar-footer {
+            padding: 20px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        /* Main Content Panel */
+        .main-panel {
+            margin-left: var(--sidebar-width);
+            min-height: 100vh;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header */
+        .admin-header {
+            height: var(--header-height);
+            background: rgba(11, 15, 25, 0.8);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 30px;
+            position: sticky;
+            top: 0;
+            z-index: 999;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+        }
+
+        .sidebar-toggle {
+            background: none;
+            border: none;
+            color: var(--text-main);
+            font-size: 1.25rem;
+            cursor: pointer;
+            margin-right: 20px;
+            display: none;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .admin-profile {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            color: var(--text-main);
+            text-decoration: none;
+        }
+
+        .admin-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary-accent), #059669);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            border: 2px solid var(--border-color);
+        }
+
+        /* Content Area */
+        .admin-content {
+            padding: 30px;
+            flex-grow: 1;
+        }
+
+        .admin-footer {
+            padding: 20px 30px;
+            border-top: 1px solid var(--border-color);
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            background: #090d16;
+        }
+
+        /* Helper Classes */
+        .text-accent {
+            color: var(--primary-accent);
+        }
+        
+        .badge-pill {
+            border-radius: 30px;
+            padding: 6px 12px;
+            font-weight: 600;
+            font-size: 0.75rem;
+        }
+
+        .bg-glass-danger {
+            background-color: rgba(239, 68, 68, 0.15);
+            color: #f87171;
+            border: 1px solid rgba(239, 68, 68, 0.2);
+        }
+        
+        .bg-glass-success {
+            background-color: rgba(16, 185, 129, 0.15);
+            color: #34d399;
+            border: 1px solid rgba(16, 185, 129, 0.2);
+        }
+
+        .bg-glass-warning {
+            background-color: rgba(245, 158, 11, 0.15);
+            color: #fbbf24;
+            border: 1px solid rgba(245, 158, 11, 0.2);
+        }
+        
+        .bg-glass-info {
+            background-color: rgba(59, 130, 246, 0.15);
+            color: #60a5fa;
+            border: 1px solid rgba(59, 130, 246, 0.2);
+        }
+
+        /* Forms in Admin Panel */
+        .form-control, .form-select {
+            background-color: rgba(17, 24, 39, 0.8);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            border-radius: 10px;
+            padding: 10px 14px;
+            transition: all 0.3s ease;
+        }
+        .form-control:focus, .form-select:focus {
+            background-color: rgba(17, 24, 39, 0.95);
+            border-color: var(--primary-accent);
+            box-shadow: 0 0 0 4px var(--primary-accent-glow);
+            color: var(--text-main);
+        }
+        .form-control::placeholder {
+            color: #4b5563;
+        }
+
+        .form-check-input {
+            background-color: rgba(17, 24, 39, 0.8);
+            border: 1px solid var(--border-color);
+        }
+        .form-check-input:checked {
+            background-color: var(--primary-accent);
+            border-color: var(--primary-accent);
+        }
+
+        /* Buttons */
+        .btn-accent {
+            background: linear-gradient(135deg, var(--primary-accent) 0%, #059669 100%);
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            padding: 10px 20px;
+            font-weight: 600;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
+            transition: all 0.3s ease;
+        }
+        .btn-accent:hover {
+            color: #fff;
+            transform: translateY(-1px);
+            box-shadow: 0 6px 16px rgba(16, 185, 129, 0.35);
+        }
+
+        .btn-glass {
+            background-color: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            border-radius: 10px;
+            padding: 10px 20px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        .btn-glass:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        /* Responsive */
+        @media (max-width: 991px) {
+            .sidebar {
+                left: calc(-1 * var(--sidebar-width));
+            }
+            .sidebar.active {
+                left: 0;
+            }
+            .main-panel {
+                margin-left: 0;
+            }
+            .sidebar-toggle {
+                display: block;
+            }
+        }
+    </style>
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+
+    <!-- Sidebar Navigation -->
+    <div class="sidebar" id="adminSidebar">
+        <a href="{% url 'admin_dashboard' %}" class="sidebar-brand d-flex align-items-center gap-2">
+            <img src="https://content.jdmagicbox.com/comp/delhi/i5/011pxx11.xx11.241029190520.a4i5/logo/healeaf-pharma-pvt-ltd-patparganj-delhi-pharmaceutical-dealers-g3pzvut.jpg" alt="Healeaf Pharma Logo" class="rounded-circle bg-white p-0.5" style="width: 32px; height: 32px; object-fit: cover;">
+            Healeaf Pharma
+        </a>
+        
+        <ul class="sidebar-menu">
+            <li class="sidebar-item">
+                <a href="{% url 'admin_dashboard' %}" class="sidebar-link {% if request.resolver_match.url_name == 'admin_dashboard' %}active{% endif %}">
+                    <i class="fas fa-th-large"></i> Dashboard
+                </a>
+            </li>
+            <li class="sidebar-item">
+                <a href="{% url 'admin_products' %}" class="sidebar-link {% if 'admin-product' in request.path %}active{% endif %}">
+                    <i class="fas fa-pills"></i> Products
+                </a>
+            </li>
+            <li class="sidebar-item">
+                <a href="{% url 'admin_categories' %}" class="sidebar-link {% if 'admin-categor' in request.path %}active{% endif %}">
+                    <i class="fas fa-layer-group"></i> Categories
+                </a>
+            </li>
+            <li class="sidebar-item">
+                <a href="{% url 'admin_orders' %}" class="sidebar-link {% if 'admin-order' in request.path %}active{% endif %}">
+                    <i class="fas fa-shopping-bag"></i> Orders
+                </a>
+            </li>
+            <li class="sidebar-item">
+                <a href="{% url 'admin_prescriptions' %}" class="sidebar-link {% if 'admin-prescription' in request.path %}active{% endif %}">
+                    <i class="fas fa-file-prescription"></i> Prescriptions
+                </a>
+            </li>
+            <li class="sidebar-item">
+                <a href="{% url 'admin_users' %}" class="sidebar-link {% if 'admin-user' in request.path %}active{% endif %}">
+                    <i class="fas fa-users-cog"></i> Users
+                </a>
+            </li>
+            <li class="sidebar-item">
+                <a href="{% url 'admin_reviews' %}" class="sidebar-link {% if 'admin-review' in request.path %}active{% endif %}">
+                    <i class="fas fa-star-half-alt"></i> Reviews
+                </a>
+            </li>
+            <li class="sidebar-item">
+                <a href="{% url 'admin_messages' %}" class="sidebar-link {% if 'admin-message' in request.path %}active{% endif %}">
+                    <i class="fas fa-envelope-open-text"></i> Messages
+                </a>
+            </li>
+            <li class="sidebar-item">
+                <a href="{% url 'admin_company_settings' %}" class="sidebar-link {% if 'admin-company-settings' in request.path %}active{% endif %}">
+                    <i class="fas fa-sliders-h"></i> Company Info
+                </a>
+            </li>
+        </ul>
+        
+        <div class="sidebar-footer">
+            <a href="{% url 'admin_logout' %}" class="sidebar-link text-danger">
+                <i class="fas fa-sign-out-alt"></i> Sign Out
+            </a>
+        </div>
+    </div>
+
+    <!-- Main Content Panel -->
+    <div class="main-panel">
+        
+        <!-- Header -->
+        <header class="admin-header">
+            <div class="header-left">
+                <button class="sidebar-toggle" id="sidebarCollapse">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <h4 class="mb-0 font-weight-bold">{% block page_title %}Admin Control Panel{% endblock %}</h4>
+            </div>
+            
+            <div class="header-right">
+                <a href="{% url 'home' %}" class="btn-glass btn-sm d-flex align-items-center gap-2">
+                    <i class="fas fa-external-link-alt"></i> View Website
+                </a>
+                
+                <div class="dropdown">
+                    <div class="admin-profile dropdown-toggle" id="profileDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                        <div class="admin-avatar">
+                            {{ user.username|slice:":1"|upper }}
+                        </div>
+                        <span class="d-none d-md-inline">{{ user.username }}</span>
+                    </div>
+                    <ul class="dropdown-menu dropdown-menu-end dropdown-menu-dark glass-card p-2" aria-labelledby="profileDropdown">
+                        <li><a class="dropdown-item py-2 rounded" href="{% url 'user_profile' %}"><i class="fas fa-user-circle me-2"></i> My Profile</a></li>
+                        <li><a class="dropdown-item py-2 rounded" href="{% url 'user_dashboard' %}"><i class="fas fa-columns me-2"></i> User Portal</a></li>
+                        <li><hr class="dropdown-divider bg-secondary"></li>
+                        <li><a class="dropdown-item py-2 rounded text-danger" href="{% url 'admin_logout' %}"><i class="fas fa-sign-out-alt me-2"></i> Logout</a></li>
+                    </ul>
+                </div>
+            </div>
+        </header>
+
+        <!-- Messages Block -->
+        {% if messages %}
+        <div class="container-fluid px-4 pt-3">
+            {% for message in messages %}
+            <div class="alert alert-dismissible fade show bg-glass-{% if message.tags == 'error' %}danger{% elif message.tags == 'success' %}success{% elif message.tags == 'warning' %}warning{% else %}info{% endif %}" role="alert">
+                <i class="fas {% if message.tags == 'error' %}fa-exclamation-circle{% elif message.tags == 'success' %}fa-check-circle{% else %}fa-info-circle{% endif %} me-2"></i>
+                {{ message }}
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <!-- Content Area -->
+        <main class="admin-content">
+            {% block admin_content %}{% endblock %}
+        </main>
+
+        <!-- Footer -->
+        <footer class="admin-footer">
+            <p class="mb-0">&copy; 2026 Healeaf Pharma. State-of-the-Art Custom Administration Console. Pair programmed with Antigravity.</p>
+        </footer>
+    </div>
+
+    <!-- Bootstrap 5 JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        // Sidebar Toggle for smaller layouts
+        const sidebarCollapse = document.getElementById('sidebarCollapse');
+        const adminSidebar = document.getElementById('adminSidebar');
+        
+        if (sidebarCollapse && adminSidebar) {
+            sidebarCollapse.addEventListener('click', function() {
+                adminSidebar.classList.toggle('active');
+            });
+        }
+    </script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

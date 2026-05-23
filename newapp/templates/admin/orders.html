@@ -1,0 +1,81 @@
+{% extends 'admin/base_admin.html' %}
+
+{% block title %}Manage Orders - HealthPharma Admin{% endblock %}
+{% block page_title %}Sales & Order Tracking{% endblock %}
+
+{% block admin_content %}
+<div class="glass-card p-4">
+    <div class="d-flex align-items-center justify-content-between mb-4">
+        <h5 class="mb-0"><i class="fas fa-receipt text-accent me-2"></i> All Orders</h5>
+        <div class="d-flex gap-2">
+            <span class="badge bg-glass-info">{{ orders.count }} Orders</span>
+        </div>
+    </div>
+
+    <!-- Table -->
+    <div class="table-responsive">
+        <table class="table table-dark table-hover align-middle mb-0" style="background: transparent;">
+            <thead>
+                <tr class="text-muted" style="border-bottom: 2px solid var(--border-color);">
+                    <th>Order Number</th>
+                    <th>Customer Name</th>
+                    <th>Date Ordered</th>
+                    <th>Total Amount</th>
+                    <th>Payment Info</th>
+                    <th>Shipment Status</th>
+                    <th>Requires Rx</th>
+                    <th style="width: 150px;" class="text-end">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for order in orders %}
+                <tr style="border-bottom: 1px solid var(--border-color);">
+                    <td class="font-weight-bold">{{ order.order_number }}</td>
+                    <td>
+                        <div>{{ order.shipping_name }}</div>
+                        <small class="text-muted">{{ order.shipping_email }}</small>
+                    </td>
+                    <td>{{ order.created_at|date:"d M Y h:i A" }}</td>
+                    <td>₹{{ order.total_amount }}</td>
+                    <td>
+                        <span class="badge bg-dark border border-secondary">{{ order.get_payment_method_display }}</span>
+                        <div class="small mt-1 {% if order.payment_status == 'paid' or order.payment_status == 'Paid' %}text-success{% else %}text-warning{% endif %}">
+                            {{ order.payment_status|upper }}
+                        </div>
+                    </td>
+                    <td>
+                        <span class="badge-pill {% if order.status == 'delivered' %}bg-glass-success{% elif order.status == 'pending' %}bg-glass-danger{% elif order.status == 'cancelled' %}bg-glass-danger{% else %}bg-glass-warning{% endif %}">
+                            {{ order.get_status_display }}
+                        </span>
+                    </td>
+                    <td>
+                        {% if order.prescription_required %}
+                        <span class="badge bg-glass-danger"><i class="fas fa-prescription me-1"></i> Required</span>
+                        {% else %}
+                        <span class="text-muted">No</span>
+                        {% endif %}
+                    </td>
+                    <td class="text-end">
+                        <div class="d-flex justify-content-end gap-2">
+                            <a href="{% url 'admin_order_detail' order.id %}" class="btn btn-glass btn-sm" title="View Details / Update">
+                                <i class="fas fa-eye text-info"></i> View/Edit
+                            </a>
+                            <form action="{% url 'admin_order_delete' order.id %}" method="post" onsubmit="return confirm('Are you sure you want to delete this order record? This cannot be undone.');" style="display:inline;">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-glass btn-sm" title="Delete Order">
+                                    <i class="fas fa-trash-alt text-danger"></i>
+                                </button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="8" class="text-center text-muted py-4">No orders placed on the system yet</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

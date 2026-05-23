@@ -1,21 +1,148 @@
 {% extends 'base.html' %}
 
-{% block title %}Checkout - HealthPharma{% endblock %}
+{% block title %}Checkout - Healeaf Pharma{% endblock %}
 
 {% block content %}
 <div class="container py-5">
-    <h1 class="mb-4"><i class="fas fa-credit-card"></i> Checkout</h1>
+    <h1 class="mb-4 font-weight-bold text-dark"><i class="fas fa-shopping-basket text-success me-2"></i> Checkout</h1>
     
-    <div class="row">
-        <!-- Checkout Form -->
-        <div class="col-md-8">
-            <div class="card shadow mb-4">
-                <div class="card-header" style="background: var(--primary-color); color: white;">
-                    <h5 class="mb-0">Shipping Address</h5>
-                </div>
-                <div class="card-body">
-                    <form method="post">
-                        {% csrf_token %}
+    <style>
+        /* Modern Premium Checkout Styles */
+        .checkout-card {
+            border: none;
+            border-radius: 18px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04) !important;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            background: #ffffff;
+        }
+        .checkout-card:hover {
+            box-shadow: 0 15px 35px rgba(46, 204, 113, 0.08) !important;
+            transform: translateY(-2px);
+        }
+        .card-header-gradient {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            color: white;
+            border: none;
+            padding: 18px 24px;
+            font-weight: 700;
+        }
+        .form-control, .form-select {
+            border-radius: 10px;
+            border: 2px solid #e2e8f0;
+            padding: 12px 16px;
+            font-size: 0.95rem;
+            background-color: #f8fafc;
+            transition: all 0.25s ease;
+            width: 100% !important;
+            box-sizing: border-box;
+        }
+        .form-control:focus, .form-select:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 4px rgba(46, 204, 113, 0.15);
+            background-color: #ffffff;
+        }
+        .form-label {
+            font-weight: 600;
+            color: #334155;
+            font-size: 0.9rem;
+            margin-bottom: 8px;
+            display: inline-block;
+        }
+        
+        /* Premium Interactive Radio Option Cards */
+        .payment-option-card {
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 16px 20px;
+            margin-bottom: 12px;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            background-color: #f8fafc;
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+        .payment-option-card:hover {
+            border-color: var(--primary-color);
+            background-color: rgba(46, 204, 113, 0.01);
+        }
+        .payment-option-card.active {
+            border-color: var(--primary-color);
+            background-color: rgba(46, 204, 113, 0.05);
+            box-shadow: 0 4px 15px rgba(46, 204, 113, 0.1);
+        }
+        .payment-option-card input[type="radio"] {
+            width: 1.25rem;
+            height: 1.25rem;
+            accent-color: var(--primary-color);
+            cursor: pointer;
+            margin-right: 14px;
+        }
+        .payment-option-card label {
+            cursor: pointer;
+            font-weight: 600;
+            color: #0f172a;
+            display: flex;
+            align-items: center;
+            width: 100%;
+            margin-bottom: 0;
+        }
+        .payment-icon {
+            font-size: 1.3rem;
+            color: var(--primary-color);
+            margin-right: 12px;
+            width: 24px;
+            text-align: center;
+        }
+        .btn-place-order {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            border: none;
+            border-radius: 12px;
+            padding: 16px;
+            font-weight: 700;
+            font-size: 1.1rem;
+            letter-spacing: 0.5px;
+            box-shadow: 0 5px 15px rgba(46, 204, 113, 0.3);
+            transition: all 0.3s ease;
+            color: white;
+        }
+        .btn-place-order:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(46, 204, 113, 0.4);
+            background: linear-gradient(135deg, var(--secondary-color) 0%, #1f8b4c 100%);
+            color: white;
+        }
+        .summary-item {
+            padding: 12px 0;
+            border-bottom: 1px dashed #e2e8f0;
+        }
+        .summary-item:last-of-type {
+            border-bottom: none;
+        }
+    </style>
+
+    <!-- SINGLE UNIFIED FORM WRAPPER -->
+    <form method="post" id="checkout-form">
+        {% csrf_token %}
+        
+        <div class="row">
+            <!-- Checkout Form Fields -->
+            <div class="col-md-8">
+                <!-- Shipping Address Card -->
+                <div class="card checkout-card shadow mb-4">
+                    <div class="card-header card-header-gradient">
+                        <h5 class="mb-0"><i class="fas fa-map-marker-alt me-2"></i> Shipping Address</h5>
+                    </div>
+                    <div class="card-body p-4">
+                        {% if messages %}
+                            {% for message in messages %}
+                                <div class="alert alert-{{ message.tags }} alert-dismissible fade show mb-4" role="alert">
+                                    {{ message }}
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                </div>
+                            {% endfor %}
+                        {% endif %}
                         
                         <div class="row">
                             <div class="col-md-6 mb-3">
@@ -23,102 +150,104 @@
                                 {{ form.shipping_name }}
                             </div>
                             <div class="col-md-6 mb-3">
-                                <label class="form-label">Email</label>
+                                <label class="form-label">Email Address</label>
                                 {{ form.shipping_email }}
                             </div>
                         </div>
                         
                         <div class="row">
                             <div class="col-md-6 mb-3">
-                                <label class="form-label">Phone</label>
+                                <label class="form-label">Phone Number</label>
                                 {{ form.shipping_phone }}
                             </div>
                             <div class="col-md-6 mb-3">
-                                <label class="form-label">Address</label>
+                                <label class="form-label">City</label>
+                                {{ form.shipping_city }}
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-12 mb-3">
+                                <label class="form-label">Delivery Address</label>
                                 {{ form.shipping_address }}
                             </div>
                         </div>
                         
                         <div class="row">
                             <div class="col-md-6 mb-3">
-                                <label class="form-label">City</label>
-                                {{ form.shipping_city }}
-                            </div>
-                            <div class="col-md-3 mb-3">
                                 <label class="form-label">State</label>
                                 {{ form.shipping_state }}
                             </div>
-                            <div class="col-md-3 mb-3">
+                            <div class="col-md-6 mb-3">
                                 <label class="form-label">ZIP Code</label>
                                 {{ form.shipping_zip }}
                             </div>
                         </div>
-                    </form>
-                </div>
-            </div>
-            
-            <!-- Prescription Section -->
-            {% if prescription_required %}
-                <div class="card shadow mb-4">
-                    <div class="card-header" style="background: #f39c12; color: white;">
-                        <h5 class="mb-0"><i class="fas fa-file-prescription"></i> Prescription Required</h5>
                     </div>
-                    <div class="card-body">
-                        <p>Some items in your cart require a prescription. Please select one:</p>
-                        
-                        <div class="mb-3">
-                            <label class="form-label">Select Verified Prescription</label>
-                            <select name="prescription" class="form-control" required>
-                                <option value="">-- Choose Prescription --</option>
-                                {% for prescription in user_prescriptions %}
-                                    <option value="{{ prescription.id }}">
-                                        {{ prescription.doctor_name }} - {{ prescription.prescription_date }}
-                                    </option>
-                                {% empty %}
-                                    <option value="" disabled>No verified prescriptions found</option>
-                                {% endfor %}
-                            </select>
+                </div>
+                
+                <!-- Prescription Section -->
+                {% if prescription_required %}
+                    <div class="card checkout-card shadow mb-4" style="border-left: 4px solid #f39c12;">
+                        <div class="card-header card-header-gradient" style="background: linear-gradient(135deg, #f39c12 0%, #d35400 100%);">
+                            <h5 class="mb-0"><i class="fas fa-file-prescription me-2"></i> Prescription Required</h5>
                         </div>
-                        
-                        {% if not user_prescriptions %}
-                            <div class="alert alert-warning">
-                                <strong>No verified prescriptions?</strong>
-                                <a href="{% url 'upload_prescription' %}">Upload one now</a>
+                        <div class="card-body p-4">
+                            <p class="text-muted mb-3">Some items in your cart require a medical prescription. Please select one of your verified prescriptions below:</p>
+                            
+                            <div class="mb-3">
+                                <label class="form-label">Select Verified Prescription</label>
+                                <select name="prescription" class="form-select" required>
+                                    <option value="">-- Choose Prescription --</option>
+                                    {% for prescription in user_prescriptions %}
+                                        <option value="{{ prescription.id }}">
+                                            Dr. {{ prescription.doctor_name }} - Uploaded on {{ prescription.prescription_date|date:"d M, Y" }}
+                                        </option>
+                                    {% empty %}
+                                        <option value="" disabled>No verified prescriptions found</option>
+                                    {% endfor %}
+                                </select>
                             </div>
-                        {% endif %}
+                            
+                            {% if not user_prescriptions %}
+                                <div class="alert alert-warning rounded-3 border-0 shadow-sm mt-3 mb-0">
+                                    <i class="fas fa-exclamation-triangle me-2 text-warning"></i>
+                                    <strong>No verified prescriptions found?</strong> 
+                                    <a href="{% url 'upload_prescription' %}" class="alert-link text-decoration-none">Upload one now</a> and wait for admin approval.
+                                </div>
+                            {% endif %}
+                        </div>
                     </div>
-                </div>
-            {% endif %}
-            
-            <!-- Payment Method -->
-            <div class="card shadow">
-                <div class="card-header" style="background: var(--primary-color); color: white;">
-                    <h5 class="mb-0">Payment Method</h5>
-                </div>
-                <div class="card-body">
-                    <form method="post">
-                        {% csrf_token %}
-                        
-                        <div class="mb-3">
-                            <div class="form-check">
-                                <input class="form-check-input" type="radio" name="payment_method" 
-                                       id="cod" value="cod" checked>
-                                <label class="form-check-label" for="cod">
-                                    Cash on Delivery (COD)
+                {% endif %}
+                
+                <!-- Payment Method Card -->
+                <div class="card checkout-card shadow mb-4">
+                    <div class="card-header card-header-gradient">
+                        <h5 class="mb-0"><i class="fas fa-wallet me-2"></i> Payment Method</h5>
+                    </div>
+                    <div class="card-body p-4">
+                        <div class="mb-4">
+                            <!-- Card 1: COD -->
+                            <div class="payment-option-card active" onclick="selectPayment('cod')">
+                                <input type="radio" name="payment_method" id="cod" value="cod" checked>
+                                <label for="cod">
+                                    <i class="fas fa-hand-holding-usd payment-icon"></i> Cash on Delivery (COD)
                                 </label>
                             </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="radio" name="payment_method" 
-                                       id="online" value="online">
-                                <label class="form-check-label" for="online">
-                                    Online Payment
+                            
+                            <!-- Card 2: Online Card -->
+                            <div class="payment-option-card" onclick="selectPayment('online')">
+                                <input type="radio" name="payment_method" id="online" value="online">
+                                <label for="online">
+                                    <i class="fas fa-credit-card payment-icon"></i> Online Credit/Debit Card
                                 </label>
                             </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="radio" name="payment_method" 
-                                       id="upi" value="upi">
-                                <label class="form-check-label" for="upi">
-                                    UPI Payment
+                            
+                            <!-- Card 3: UPI -->
+                            <div class="payment-option-card" onclick="selectPayment('upi')">
+                                <input type="radio" name="payment_method" id="upi" value="upi">
+                                <label for="upi">
+                                    <i class="fab fa-google-pay payment-icon" style="font-size: 1.6rem;"></i> UPI / Instant Payments
                                 </label>
                             </div>
                         </div>
@@ -128,40 +257,73 @@
                             {{ form.notes }}
                         </div>
                         
-                        <button type="submit" class="btn btn-primary btn-lg w-100">
-                            <i class="fas fa-check"></i> Place Order
+                        <button type="submit" class="btn btn-place-order w-100 mt-2">
+                            <i class="fas fa-check-circle me-2"></i> Place Order (₹{{ cart.get_total }})
                         </button>
-                    </form>
+                    </div>
                 </div>
             </div>
-        </div>
-        
-        <!-- Order Summary -->
-        <div class="col-md-4">
-            <div class="card shadow">
-                <div class="card-header" style="background: var(--primary-color); color: white;">
-                    <h5 class="mb-0">Order Summary</h5>
-                </div>
-                <div class="card-body">
-                    {% for item in cart.items.all %}
-                        <div class="d-flex justify-content-between mb-2">
-                            <span>{{ item.product.name }} x {{ item.quantity }}</span>
-                            <strong>₹{{ item.get_total }}</strong>
+            
+            <!-- Order Summary Right Panel -->
+            <div class="col-md-4">
+                <div class="card checkout-card shadow sticky-top" style="top: 24px; z-index: 10;">
+                    <div class="card-header card-header-gradient">
+                        <h5 class="mb-0"><i class="fas fa-receipt me-2"></i> Order Summary</h5>
+                    </div>
+                    <div class="card-body p-4">
+                        <div class="mb-3">
+                            {% for item in cart.items.all %}
+                                <div class="d-flex justify-content-between align-items-center summary-item">
+                                    <div>
+                                        <h6 class="mb-0 text-dark font-weight-bold" style="font-size: 0.95rem;">{{ item.product.name }}</h6>
+                                        <small class="text-muted">Qty: {{ item.quantity }} × ₹{{ item.product.get_display_price }}</small>
+                                    </div>
+                                    <span class="font-weight-bold text-dark">₹{{ item.get_total }}</span>
+                                </div>
+                            {% endfor %}
                         </div>
-                    {% endfor %}
-                    
-                    <hr>
-                    <div class="d-flex justify-content-between mb-3">
-                        <h5>Total</h5>
-                        <h5 class="price">₹{{ cart.get_total }}</h5>
-                    </div>
-                    
-                    <div class="alert alert-info" role="alert">
-                        <i class="fas fa-info-circle"></i> Free shipping on all orders!
+                        
+                        <div class="d-flex justify-content-between mb-2">
+                            <span class="text-muted">Subtotal</span>
+                            <strong class="text-dark">₹{{ cart.get_total }}</strong>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span class="text-muted">Shipping</span>
+                            <strong class="text-success font-weight-bold">FREE</strong>
+                        </div>
+                        
+                        <hr class="my-3" style="border-top: 2px solid #e2e8f0;">
+                        
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h5 class="mb-0 font-weight-bold text-dark">Total Amount</h5>
+                            <h4 class="mb-0 text-success font-weight-bold" style="font-size: 1.6rem;">₹{{ cart.get_total }}</h4>
+                        </div>
+                        
+                        <div class="alert alert-success border-0 rounded-3 text-center mb-0 mt-3" style="background-color: rgba(46, 204, 113, 0.08); color: #1e7e34; font-size: 0.85rem;">
+                            <i class="fas fa-shield-alt me-1 text-success"></i> 100% Safe & Secure Checkout
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
+    </form>
 </div>
+
+<!-- Click Handler script for Payment Cards -->
+<script>
+    function selectPayment(val) {
+        // Uncheck all radios and remove active class
+        document.querySelectorAll('.payment-option-card').forEach(card => {
+            card.classList.remove('active');
+        });
+        
+        // Find checked option
+        const targetRadio = document.getElementById(val);
+        if (targetRadio) {
+            targetRadio.checked = true;
+            // Add active class to clicked card parent
+            targetRadio.closest('.payment-option-card').classList.add('active');
+        }
+    }
+</script>
 {% endblock %}

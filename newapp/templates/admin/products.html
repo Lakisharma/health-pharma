@@ -1,0 +1,129 @@
+{% extends 'admin/base_admin.html' %}
+
+{% block title %}Manage Products - HealthPharma Admin{% endblock %}
+{% block page_title %}Medicine Inventory{% endblock %}
+
+{% block admin_content %}
+<div class="glass-card p-4 mb-4">
+    <!-- Header Actions -->
+    <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3 mb-4">
+        <h5 class="mb-0"><i class="fas fa-pills text-accent me-2"></i> Catalog Inventory</h5>
+        <a href="{% url 'admin_product_add' %}" class="btn btn-accent btn-sm d-flex align-items-center gap-2">
+            <i class="fas fa-plus"></i> Add New Product
+        </a>
+    </div>
+
+    <!-- Filters Search Form -->
+    <form method="get" class="row g-3 mb-4 p-3 rounded" style="background-color: rgba(255, 255, 255, 0.02); border: 1px solid var(--border-color);">
+        <div class="col-md-5">
+            <div class="input-group">
+                <span class="input-group-text bg-dark border-secondary text-muted"><i class="fas fa-search"></i></span>
+                <input type="text" name="search" class="form-control" placeholder="Search by name, generic name, or manufacturer..." value="{{ search_query }}">
+            </div>
+        </div>
+        <div class="col-md-3">
+            <select name="category" class="form-select">
+                <option value="">All Categories</option>
+                {% for category in categories %}
+                <option value="{{ category.name }}" {% if category_filter == category.name %}selected{% endif %}>{{ category.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-2">
+            <select name="stock_status" class="form-select">
+                <option value="">All Stock Status</option>
+                <option value="low" {% if stock_status_filter == 'low' %}selected{% endif %}>Low Stock (<15)</option>
+                <option value="out" {% if stock_status_filter == 'out' %}selected{% endif %}>Out of Stock</option>
+            </select>
+        </div>
+        <div class="col-md-2 d-grid">
+            <button type="submit" class="btn btn-glass btn-sm"><i class="fas fa-filter me-2"></i> Filter</button>
+        </div>
+    </form>
+
+    <!-- Table -->
+    <div class="table-responsive">
+        <table class="table table-dark table-hover align-middle mb-0" style="background: transparent;">
+            <thead>
+                <tr class="text-muted" style="border-bottom: 2px solid var(--border-color);">
+                    <th style="width: 80px;">Image</th>
+                    <th>Product & Info</th>
+                    <th>Category</th>
+                    <th>Price Details</th>
+                    <th>Stock</th>
+                    <th>Requires Rx</th>
+                    <th>Status</th>
+                    <th style="width: 150px;" class="text-end">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for product in products %}
+                <tr style="border-bottom: 1px solid var(--border-color);">
+                    <td>
+                        {% if product.image %}
+                        <img src="{{ product.image.url }}" alt="{{ product.name }}" class="rounded" style="width: 50px; height: 50px; object-fit: cover; border: 1px solid var(--border-color);">
+                        {% else %}
+                        <div class="rounded bg-secondary d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
+                            <i class="fas fa-image text-muted"></i>
+                        </div>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <div class="font-weight-bold">{{ product.name }}</div>
+                        <div class="small text-muted">{{ product.generic_name }} | {{ product.strength }}</div>
+                        <small class="text-secondary">{{ product.manufacturer }}</small>
+                    </td>
+                    <td><span class="badge bg-secondary">{{ product.category.name }}</span></td>
+                    <td>
+                        <div>₹{{ product.get_display_price }}</div>
+                        {% if product.discount_price %}
+                        <small class="text-decoration-line-through text-muted">₹{{ product.price }}</small>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if product.stock == 0 %}
+                        <span class="badge-pill bg-glass-danger">Out of Stock (0)</span>
+                        {% elif product.stock < 15 %}
+                        <span class="badge-pill bg-glass-warning">Low Stock ({{ product.stock }})</span>
+                        {% else %}
+                        <span class="badge-pill bg-glass-success">{{ product.stock }} {{ product.get_unit_display }}s</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if product.requires_prescription %}
+                        <span class="badge bg-glass-danger"><i class="fas fa-prescription me-1"></i> Yes</span>
+                        {% else %}
+                        <span class="text-muted">No</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if product.is_active %}
+                        <span class="badge bg-glass-success">Active</span>
+                        {% else %}
+                        <span class="badge bg-glass-danger">Inactive</span>
+                        {% endif %}
+                    </td>
+                    <td class="text-end">
+                        <div class="d-flex justify-content-end gap-2">
+                            <a href="{% url 'admin_product_edit' product.id %}" class="btn btn-glass btn-sm" title="Edit Medicine">
+                                <i class="fas fa-edit text-warning"></i>
+                            </a>
+                            <form action="{% url 'admin_product_delete' product.id %}" method="post" onsubmit="return confirm('Are you sure you want to delete this medicine?');" style="display:inline;">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-glass btn-sm" title="Delete Medicine">
+                                    <i class="fas fa-trash-alt text-danger"></i>
+                                </button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="8" class="text-center text-muted py-4">No products matching the search query or filters</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

@@ -6,28 +6,26 @@ from decimal import Decimal
 
 
 class Command(BaseCommand):
-    help = 'Setup initial data for HealthPharma'
+    help = 'Setup initial data for Healeaf Pharma'
 
     def handle(self, *args, **options):
         # Create superuser
         if not User.objects.filter(username='admin').exists():
-            User.objects.create_superuser('admin', 'admin@healthpharma.com', 'admin123')
+            User.objects.create_superuser('admin', 'admin@healeafpharma.com', 'admin123')
             self.stdout.write(self.style.SUCCESS('✓ Created superuser: admin (password: admin123)'))
         else:
             self.stdout.write('Superuser already exists')
 
         # Create company info
         if not CompanyInfo.objects.exists():
-            company = CompanyInfo.objects.create(
-                company_name='HealthPharma',
+                company_name='Healeaf Pharma',
                 phone='+91-1800-123-4567',
-                email='support@healthpharma.com',
+                email='support@healeafpharma.com',
                 address='123 Medical Plaza, Healthcare Street',
                 city='Mumbai',
                 state='Maharashtra',
                 zip_code='400001',
-                about='HealthPharma is your trusted online pharmacy providing authentic medicines and healthcare products at affordable prices. We are committed to making healthcare accessible to everyone.'
-            )
+                about='Healeaf Pharma is your trusted online pharmacy providing authentic medicines and healthcare products at affordable prices. We are committed to making healthcare accessible to everyone.'
             self.stdout.write(self.style.SUCCESS('✓ Created company information'))
         else:
             self.stdout.write('Company info already exists')

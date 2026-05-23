@@ -127,3 +127,18 @@ MEDIA_ROOT = BASE_DIR / 'media'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Email Configuration
+# By default, emails (including reset OTPs) are printed to the running server terminal.
+# To send real emails to your customers, change the EMAIL_BACKEND to 'smtp' and provide SMTP server details below.
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+DEFAULT_FROM_EMAIL = 'support@healeafpharma.com'
+
+# Real SMTP Settings (Uncomment and configure these to send live OTP emails via Gmail or any other provider)
+# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+# EMAIL_HOST = 'smtp.gmail.com'
+# EMAIL_PORT = 587
+# EMAIL_USE_TLS = True
+# EMAIL_HOST_USER = 'your-email@gmail.com'
+# EMAIL_HOST_PASSWORD = 'your-gmail-app-password' # Note: Use App Passwords for Gmail, not regular passwords
+

@@ -6,7 +6,7 @@ from datetime import datetime
 
 # Company Configuration
 class CompanyInfo(models.Model):
-    company_name = models.CharField(max_length=200, default="HealthPharma")
+    company_name = models.CharField(max_length=200, default="Healeaf Pharma")
     phone = models.CharField(max_length=20)
     email = models.EmailField()
     address = models.TextField()
@@ -109,8 +109,14 @@ class Prescription(models.Model):
     prescription_date = models.DateField()
     file = models.FileField(upload_to='prescriptions/')
     verified = models.BooleanField(default=False)
+    is_verified = models.BooleanField(default=False)  # For admin approval
+    verified_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='verified_prescriptions')
     notes = models.TextField(blank=True)
     uploaded_at = models.DateTimeField(auto_now_add=True)
+    verified_at = models.DateTimeField(null=True, blank=True)
+    
+    class Meta:
+        ordering = ['-uploaded_at']
     
     def __str__(self):
         return f"Prescription by {self.doctor_name} - {self.user.username}"

@@ -1,0 +1,83 @@
+{% extends 'admin/base_admin.html' %}
+
+{% block title %}Manage Users - HealthPharma Admin{% endblock %}
+{% block page_title %}User Management Directory{% endblock %}
+
+{% block admin_content %}
+<div class="glass-card p-4">
+    <div class="d-flex align-items-center justify-content-between mb-4">
+        <h5 class="mb-0"><i class="fas fa-users-cog text-accent me-2"></i> Client Directory</h5>
+        <span class="badge bg-glass-info">{{ users.count }} Total Accounts</span>
+    </div>
+
+    <!-- Table -->
+    <div class="table-responsive">
+        <table class="table table-dark table-hover align-middle mb-0" style="background: transparent;">
+            <thead>
+                <tr class="text-muted" style="border-bottom: 2px solid var(--border-color);">
+                    <th>Account Username</th>
+                    <th>Full Name</th>
+                    <th>Email Address</th>
+                    <th>Role Privilege</th>
+                    <th>Account Status</th>
+                    <th>Joined Date</th>
+                    <th style="width: 180px;" class="text-end">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for customer in users %}
+                <tr style="border-bottom: 1px solid var(--border-color);">
+                    <td class="font-weight-bold">
+                        <div class="d-flex align-items-center gap-2">
+                            <div class="admin-avatar" style="width:30px; height:30px; font-size: 0.85rem;">
+                                {{ customer.username|slice:":1"|upper }}
+                            </div>
+                            {{ customer.username }}
+                        </div>
+                    </td>
+                    <td>{{ customer.get_full_name|default:"Not Provided" }}</td>
+                    <td>{{ customer.email }}</td>
+                    <td>
+                        {% if customer.is_staff %}
+                        <span class="badge bg-glass-danger"><i class="fas fa-user-shield me-1"></i> Admin / Staff</span>
+                        {% else %}
+                        <span class="badge bg-glass-info"><i class="fas fa-user me-1"></i> Regular Customer</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if customer.is_active %}
+                        <span class="badge-pill bg-glass-success">Active / Unblocked</span>
+                        {% else %}
+                        <span class="badge-pill bg-glass-danger">Suspended / Blocked</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ customer.date_joined|date:"d M Y" }}</td>
+                    <td class="text-end">
+                        <div class="d-flex justify-content-end gap-2">
+                            <a href="{% url 'admin_user_edit' customer.id %}" class="btn btn-glass btn-sm" title="Edit Permissions">
+                                <i class="fas fa-user-edit text-warning"></i>
+                            </a>
+                            
+                            <form action="{% url 'admin_user_toggle_status' customer.id %}" method="post" style="display:inline;">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-glass btn-sm" title="Toggle Active/Blocked Status">
+                                    {% if customer.is_active %}
+                                    <i class="fas fa-ban text-danger"></i> Block
+                                    {% else %}
+                                    <i class="fas fa-check-circle text-success"></i> Activate
+                                    {% endif %}
+                                </button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="7" class="text-center text-muted py-4">No accounts registered on the system yet</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

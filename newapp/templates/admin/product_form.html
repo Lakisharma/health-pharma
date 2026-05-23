@@ -1,0 +1,138 @@
+{% extends 'admin/base_admin.html' %}
+
+{% block title %}{% if form.instance.pk %}Edit Product{% else %}Add Product{% endif %} - HealthPharma Admin{% endblock %}
+{% block page_title %}{% if form.instance.pk %}Edit Medicine: {{ form.instance.name }}{% else %}Register New Product/Medicine{% endif %}{% endblock %}
+
+{% block admin_content %}
+<form method="post" enctype="multipart/form-data" class="row g-4 justify-content-center">
+    {% csrf_token %}
+    
+    <div class="col-xl-8 col-lg-10">
+        <div class="glass-card p-5">
+            <h5 class="mb-4 text-accent"><i class="fas fa-info-circle me-2"></i> Medicine Properties</h5>
+            
+            <div class="row g-3">
+                <div class="col-md-6 mb-3">
+                    <label for="{{ form.name.id_for_label }}" class="form-label"><i class="fas fa-capsules"></i> Product Name</label>
+                    {{ form.name }}
+                    {% if form.name.errors %}
+                        <div class="text-danger mt-1 small">{{ form.name.errors }}</div>
+                    {% endif %}
+                </div>
+                
+                <div class="col-md-6 mb-3">
+                    <label for="{{ form.generic_name.id_for_label }}" class="form-label"><i class="fas fa-dna"></i> Generic/Chemical Name</label>
+                    {{ form.generic_name }}
+                    {% if form.generic_name.errors %}
+                        <div class="text-danger mt-1 small">{{ form.generic_name.errors }}</div>
+                    {% endif %}
+                </div>
+                
+                <div class="col-md-6 mb-3">
+                    <label for="{{ form.category.id_for_label }}" class="form-label"><i class="fas fa-layer-group"></i> Category</label>
+                    {{ form.category }}
+                    {% if form.category.errors %}
+                        <div class="text-danger mt-1 small">{{ form.category.errors }}</div>
+                    {% endif %}
+                </div>
+                
+                <div class="col-md-6 mb-3">
+                    <label for="{{ form.manufacturer.id_for_label }}" class="form-label"><i class="fas fa-industry"></i> Manufacturer</label>
+                    {{ form.manufacturer }}
+                    {% if form.manufacturer.errors %}
+                        <div class="text-danger mt-1 small">{{ form.manufacturer.errors }}</div>
+                    {% endif %}
+                </div>
+                
+                <div class="col-12 mb-3">
+                    <label for="{{ form.description.id_for_label }}" class="form-label"><i class="fas fa-align-left"></i> Description</label>
+                    {{ form.description }}
+                    {% if form.description.errors %}
+                        <div class="text-danger mt-1 small">{{ form.description.errors }}</div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-xl-4 col-lg-10">
+        <div class="row g-4">
+            <!-- Pricing, Inventory, Specs -->
+            <div class="col-12">
+                <div class="glass-card p-4">
+                    <h5 class="mb-4 text-accent"><i class="fas fa-tags me-2"></i> Pricing & Inventory</h5>
+                    
+                    <div class="mb-3">
+                        <label for="{{ form.price.id_for_label }}" class="form-label">Price (₹)</label>
+                        {{ form.price }}
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="{{ form.discount_price.id_for_label }}" class="form-label">Discount Price (₹)</label>
+                        {{ form.discount_price }}
+                    </div>
+                    
+                    <div class="row g-2 mb-3">
+                        <div class="col-6">
+                            <label for="{{ form.stock.id_for_label }}" class="form-label">Stock</label>
+                            {{ form.stock }}
+                        </div>
+                        <div class="col-6">
+                            <label for="{{ form.unit.id_for_label }}" class="form-label">Unit Type</label>
+                            {{ form.unit }}
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="{{ form.strength.id_for_label }}" class="form-label">Strength (e.g. 500mg)</label>
+                        {{ form.strength }}
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="{{ form.expiry_date.id_for_label }}" class="form-label"><i class="fas fa-calendar-times"></i> Expiry Date</label>
+                        {{ form.expiry_date }}
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Controls & Media -->
+            <div class="col-12">
+                <div class="glass-card p-4">
+                    <h5 class="mb-4 text-accent"><i class="fas fa-file-image me-2"></i> Media & Settings</h5>
+                    
+                    <div class="mb-4">
+                        <label for="{{ form.image.id_for_label }}" class="form-label">Product Image</label>
+                        {% if form.instance.image %}
+                            <div class="mb-2">
+                                <img src="{{ form.instance.image.url }}" alt="{{ form.instance.name }}" class="rounded img-thumbnail" style="max-height: 100px; background-color: var(--bg-primary);">
+                            </div>
+                        {% endif %}
+                        {{ form.image }}
+                    </div>
+                    
+                    <div class="form-check form-switch mb-3">
+                        {{ form.requires_prescription }}
+                        <label class="form-check-label text-danger font-weight-bold" for="{{ form.requires_prescription.id_for_label }}">
+                            <i class="fas fa-prescription"></i> Requires Prescription
+                        </label>
+                    </div>
+                    
+                    <div class="form-check form-switch mb-3">
+                        {{ form.is_active }}
+                        <label class="form-check-label" for="{{ form.is_active.id_for_label }}">
+                            Product Active Status
+                        </label>
+                    </div>
+                    
+                    <div class="d-grid gap-2 mt-4">
+                        <button type="submit" class="btn btn-accent btn-block">
+                            <i class="fas fa-save me-2"></i> Save Medicine
+                        </button>
+                        <a href="{% url 'admin_products' %}" class="btn btn-glass btn-block">Cancel</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+{% endblock %}

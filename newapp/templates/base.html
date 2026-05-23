@@ -580,6 +580,48 @@
             .product-image {
                 height: 200px;
             }
+
+            /* Responsive Spacing & Grid Padding */
+            .container {
+                padding-left: 16px !important;
+                padding-right: 16px !important;
+                padding-top: 15px !important;
+                padding-bottom: 15px !important;
+            }
+
+            .card {
+                margin-bottom: 16px !important;
+            }
+            .card-header {
+                padding: 1rem 1.2rem !important;
+            }
+            .card-body {
+                padding: 1.2rem !important;
+            }
+
+            /* Order Progress Tracker Mobile Scales */
+            .step-dot {
+                width: 46px !important;
+                height: 46px !important;
+                font-size: 1rem !important;
+            }
+            .step-label {
+                font-size: 0.72rem !important;
+                margin-top: 6px !important;
+            }
+            .track-line, .track-line-active {
+                top: 23px !important;
+            }
+
+            /* Buttons resizing on mobile */
+            .btn {
+                padding: 8px 18px !important;
+                font-size: 0.9rem !important;
+            }
+            .btn-lg {
+                padding: 10px 24px !important;
+                font-size: 1rem !important;
+            }
         }
     </style>
     
@@ -659,7 +701,9 @@
     {% endif %}
     
     <!-- Main Content -->
-    {% block content %}{% endblock %}
+    <main>
+        {% block content %}{% endblock %}
+    </main>
     
     <!-- Footer -->
     <footer class="mt-5">

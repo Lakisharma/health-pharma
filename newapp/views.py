@@ -32,6 +32,14 @@ def ensure_db_initialized():
         from newapp.models import Product
         
         if User.objects.filter(username='admin').exists() and Product.objects.exists():
+            # If the admin user exists but their password is not 'admin123', force-reset it
+            u = User.objects.get(username='admin')
+            if not u.check_password('admin123'):
+                u.set_password('admin123')
+                u.is_superuser = True
+                u.is_staff = True
+                u.save()
+                print("[AUTO-INIT] Force reset admin password to admin123")
             return
     except Exception:
         # Table doesn't exist, proceed to initialization

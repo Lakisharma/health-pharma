@@ -9,12 +9,17 @@ class Command(BaseCommand):
     help = 'Setup initial data for Healeaf Pharma'
 
     def handle(self, *args, **options):
-        # Create superuser
+        # Create or update superuser
         if not User.objects.filter(username='admin').exists():
             User.objects.create_superuser('admin', 'admin@healeafpharma.com', 'admin123')
             self.stdout.write(self.style.SUCCESS('[OK] Created superuser: admin (password: admin123)'))
         else:
-            self.stdout.write('Superuser already exists')
+            u = User.objects.get(username='admin')
+            u.set_password('admin123')
+            u.is_superuser = True
+            u.is_staff = True
+            u.save()
+            self.stdout.write(self.style.SUCCESS('[OK] Force-updated existing admin superuser password to admin123'))
 
         # Create company info
         if not CompanyInfo.objects.exists():

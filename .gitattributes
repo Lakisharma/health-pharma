@@ -1,0 +1,2 @@
+# Force Unix LF line endings for shell scripts on checkout/commit
+*.sh text eol=lf

@@ -87,4 +87,7 @@ urlpatterns = [
     
     # Notifications
     path('admin-notifications/mark-read/', views.admin_mark_notifications_read, name='admin_mark_notifications_read'),
+    
+    # DB Debugging & Initialization
+    path('debug-db/', views.debug_db, name='debug_db'),
 ]

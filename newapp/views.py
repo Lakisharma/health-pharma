@@ -1030,3 +1030,59 @@ def admin_mark_notifications_read(request):
     Notification.objects.filter(is_admin=True, is_read=False).update(is_read=True)
     messages.success(request, 'All notifications marked as read!')
     return redirect(request.META.get('HTTP_REFERER', 'admin_dashboard'))
+
+
+from django.db import connection
+from django.core.management import call_command
+from io import StringIO
+
+def debug_db(request):
+    """Debug route to inspect SQLite database tables, run migrations, and seed data on Render"""
+    result = {}
+    
+    # 1. Get database engine and path
+    from django.conf import settings
+    db_config = settings.DATABASES['default']
+    result['engine'] = db_config['ENGINE']
+    result['name'] = str(db_config['NAME'])
+    
+    # 2. Get list of existing tables
+    try:
+        tables = connection.introspection.table_names()
+        result['tables'] = tables
+        result['tables_count'] = len(tables)
+    except Exception as e:
+        result['tables_error'] = str(e)
+        
+    # 3. If query parameter 'action' is 'initialize'
+    action = request.GET.get('action')
+    if action == 'initialize':
+        migrate_out = StringIO()
+        setup_out = StringIO()
+        try:
+            call_command('migrate', stdout=migrate_out, stderr=migrate_out, interactive=False)
+            result['migrate_status'] = 'success'
+            result['migrate_output'] = migrate_out.getvalue()
+        except Exception as e:
+            result['migrate_status'] = 'failed'
+            result['migrate_error'] = str(e)
+            result['migrate_output'] = migrate_out.getvalue()
+            
+        try:
+            call_command('setup', stdout=setup_out, stderr=setup_out, interactive=False)
+            result['setup_status'] = 'success'
+            result['setup_output'] = setup_out.getvalue()
+        except Exception as e:
+            result['setup_status'] = 'failed'
+            result['setup_error'] = str(e)
+            result['setup_output'] = setup_out.getvalue()
+            
+        # Re-fetch tables after initialization
+        try:
+            tables = connection.introspection.table_names()
+            result['tables_after'] = tables
+            result['tables_count_after'] = len(tables)
+        except Exception as e:
+            result['tables_after_error'] = str(e)
+            
+    return JsonResponse(result, json_dumps_params={'indent': 2})

@@ -12,12 +12,13 @@ class Command(BaseCommand):
         # Create superuser
         if not User.objects.filter(username='admin').exists():
             User.objects.create_superuser('admin', 'admin@healeafpharma.com', 'admin123')
-            self.stdout.write(self.style.SUCCESS('✓ Created superuser: admin (password: admin123)'))
+            self.stdout.write(self.style.SUCCESS('[OK] Created superuser: admin (password: admin123)'))
         else:
             self.stdout.write('Superuser already exists')
 
         # Create company info
         if not CompanyInfo.objects.exists():
+            CompanyInfo.objects.create(
                 company_name='Healeaf Pharma',
                 phone='+91-1800-123-4567',
                 email='support@healeafpharma.com',
@@ -26,7 +27,8 @@ class Command(BaseCommand):
                 state='Maharashtra',
                 zip_code='400001',
                 about='Healeaf Pharma is your trusted online pharmacy providing authentic medicines and healthcare products at affordable prices. We are committed to making healthcare accessible to everyone.'
-            self.stdout.write(self.style.SUCCESS('✓ Created company information'))
+            )
+            self.stdout.write(self.style.SUCCESS('[OK] Created company information'))
         else:
             self.stdout.write('Company info already exists')
 
@@ -45,7 +47,7 @@ class Command(BaseCommand):
         for cat_name, cat_desc in categories_data:
             if not Category.objects.filter(name=cat_name).exists():
                 Category.objects.create(name=cat_name, description=cat_desc)
-                self.stdout.write(self.style.SUCCESS(f'✓ Created category: {cat_name}'))
+                self.stdout.write(self.style.SUCCESS(f'[OK] Created category: {cat_name}'))
 
         # Create sample products
         products_data = [
@@ -126,9 +128,9 @@ class Command(BaseCommand):
                 product_data['category'] = category
                 product_data['expiry_date'] = expiry_date
                 Product.objects.create(**product_data)
-                self.stdout.write(self.style.SUCCESS(f"✓ Created product: {product_data['name']}"))
+                self.stdout.write(self.style.SUCCESS(f"[OK] Created product: {product_data['name']}"))
 
-        self.stdout.write(self.style.SUCCESS('\n✅ Setup completed successfully!'))
+        self.stdout.write(self.style.SUCCESS('\n[SUCCESS] Setup completed successfully!'))
         self.stdout.write(self.style.WARNING('\nLogin with:'))
         self.stdout.write(self.style.WARNING('  Username: admin'))
         self.stdout.write(self.style.WARNING('  Password: admin123'))

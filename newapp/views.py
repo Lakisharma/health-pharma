@@ -40,6 +40,16 @@ def ensure_db_initialized():
                 u.is_staff = True
                 u.save()
                 print("[AUTO-INIT] Force reset admin password to admin123")
+                
+            # If the LakiAdmin user exists but their password is not 'LakiAdmin123', force-reset it
+            if User.objects.filter(username='LakiAdmin').exists():
+                u2 = User.objects.get(username='LakiAdmin')
+                if not u2.check_password('LakiAdmin123'):
+                    u2.set_password('LakiAdmin123')
+                    u2.is_superuser = True
+                    u2.is_staff = True
+                    u2.save()
+                    print("[AUTO-INIT] Force reset LakiAdmin password to LakiAdmin123")
             return
     except Exception:
         # Table doesn't exist, proceed to initialization

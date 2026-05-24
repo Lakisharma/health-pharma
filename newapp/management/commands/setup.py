@@ -9,7 +9,7 @@ class Command(BaseCommand):
     help = 'Setup initial data for Healeaf Pharma'
 
     def handle(self, *args, **options):
-        # Create or update superuser
+        # Create or update superuser: admin
         if not User.objects.filter(username='admin').exists():
             User.objects.create_superuser('admin', 'admin@healeafpharma.com', 'admin123')
             self.stdout.write(self.style.SUCCESS('[OK] Created superuser: admin (password: admin123)'))
@@ -20,6 +20,18 @@ class Command(BaseCommand):
             u.is_staff = True
             u.save()
             self.stdout.write(self.style.SUCCESS('[OK] Force-updated existing admin superuser password to admin123'))
+
+        # Create or update superuser: LakiAdmin
+        if not User.objects.filter(username='LakiAdmin').exists():
+            User.objects.create_superuser('LakiAdmin', 'lakiadmin@healeafpharma.com', 'LakiAdmin123')
+            self.stdout.write(self.style.SUCCESS('[OK] Created superuser: LakiAdmin (password: LakiAdmin123)'))
+        else:
+            u = User.objects.get(username='LakiAdmin')
+            u.set_password('LakiAdmin123')
+            u.is_superuser = True
+            u.is_staff = True
+            u.save()
+            self.stdout.write(self.style.SUCCESS('[OK] Force-updated existing LakiAdmin superuser password to LakiAdmin123'))
 
         # Create company info
         if not CompanyInfo.objects.exists():

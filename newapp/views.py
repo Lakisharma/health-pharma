@@ -174,7 +174,10 @@ def user_dashboard(request):
     user = request.user
     orders = user.orders.all()
     prescriptions = user.prescriptions.all()
-    cart = user.cart
+    try:
+        cart = user.cart
+    except Cart.DoesNotExist:
+        cart = Cart.objects.create(user=user)
     
     # Calculate dynamic total spent (excluding cancelled orders)
     from django.db.models import Sum
@@ -270,7 +273,10 @@ def update_cart_item(request, item_id):
             cart_item.quantity = quantity
             cart_item.save()
         
-        cart = request.user.cart
+        try:
+            cart = request.user.cart
+        except Cart.DoesNotExist:
+            cart = Cart.objects.create(user=request.user)
         return JsonResponse({
             'status': 'success',
             'cart_total': str(cart.get_total()),
@@ -293,7 +299,10 @@ def remove_from_cart(request, item_id):
 @login_required(login_url='login')
 def checkout(request):
     """Checkout page"""
-    cart = request.user.cart
+    try:
+        cart = request.user.cart
+    except Cart.DoesNotExist:
+        cart = Cart.objects.create(user=request.user)
     
     if not cart.items.exists():
         messages.warning(request, 'Your cart is empty!')

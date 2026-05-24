@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 from django.core.validators import MinValueValidator, MaxValueValidator
 import uuid
 from datetime import datetime
+from django.utils import timezone
 
 # Company Configuration
 class CompanyInfo(models.Model):
@@ -120,6 +121,33 @@ class Prescription(models.Model):
     
     def __str__(self):
         return f"Prescription by {self.doctor_name} - {self.user.username}"
+
+    def save(self, *args, **kwargs):
+        # Bidirectional sync between verified and is_verified fields
+        if self.pk:
+            try:
+                orig = self.__class__.objects.get(pk=self.pk)
+                if self.verified != orig.verified:
+                    self.is_verified = self.verified
+                elif self.is_verified != orig.is_verified:
+                    self.verified = self.is_verified
+            except self.__class__.DoesNotExist:
+                # If record doesn't exist yet, align them
+                if self.verified or self.is_verified:
+                    self.verified = True
+                    self.is_verified = True
+        else:
+            if self.verified or self.is_verified:
+                self.verified = True
+                self.is_verified = True
+        
+        # Set timezone-aware verified_at timestamp when verified becomes True
+        if self.verified and not self.verified_at:
+            self.verified_at = timezone.now()
+        elif not self.verified:
+            self.verified_at = None
+            
+        super().save(*args, **kwargs)
 
 
 # Shopping Cart

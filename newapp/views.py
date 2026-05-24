@@ -16,11 +16,68 @@ from .forms import (
     UserRegisterForm, UserLoginForm, UserProfileForm, ReviewForm, 
     PrescriptionForm, OrderForm, ContactForm, ProductSearchForm
 )
+import os
+import time
+
+_db_initializing = False
+
+def ensure_db_initialized():
+    """Ensure that the database is fully migrated and seeded with initial data on load"""
+    global _db_initializing
+    if _db_initializing:
+        return
+        
+    try:
+        from django.contrib.auth.models import User
+        from newapp.models import Product
+        
+        if User.objects.filter(username='admin').exists() and Product.objects.exists():
+            return
+    except Exception:
+        # Table doesn't exist, proceed to initialization
+        pass
+        
+    _db_initializing = True
+    try:
+        from django.core.management import call_command
+        
+        acquired_lock = False
+        lock_file = None
+        
+        # On Linux/Render, use fcntl to prevent multi-worker migration races
+        if os.environ.get('RENDER') or os.environ.get('PORT'):
+            try:
+                import fcntl
+                lock_file = open('/tmp/db_view_init.lock', 'w')
+                fcntl.flock(lock_file, fcntl.LOCK_EX | fcntl.LOCK_NB)
+                acquired_lock = True
+            except (ImportError, BlockingIOError, PermissionError):
+                # Lock is already held by another process/request, wait a bit
+                time.sleep(1.5)
+                return
+        else:
+            acquired_lock = True
+            
+        if acquired_lock:
+            print("[AUTO-INIT] Database uninitialized. Running migrations and setup...")
+            call_command('migrate', interactive=False)
+            call_command('setup', interactive=False)
+            print("[AUTO-INIT] Database successfully initialized!")
+    except Exception as e:
+        print(f"[AUTO-INIT] Database initialization failed: {str(e)}")
+    finally:
+        if lock_file:
+            try:
+                lock_file.close()
+            except Exception:
+                pass
+        _db_initializing = False
 
 
 # ==================== Home Page ====================
 def home(request):
     """Home page with featured products"""
+    ensure_db_initialized()
     featured_products = Product.objects.filter(is_active=True)[:8]
     categories = Category.objects.all()
     company = CompanyInfo.objects.first()
@@ -139,6 +196,7 @@ def register(request):
 
 def user_login(request):
     """User login"""
+    ensure_db_initialized()
     if request.user.is_authenticated:
         return redirect('home')
     
@@ -585,6 +643,7 @@ from .forms import CategoryForm, ProductForm, CompanyInfoForm, AdminOrderForm, A
 
 def admin_login(request):
     """Admin login"""
+    ensure_db_initialized()
     if request.user.is_authenticated and request.user.is_staff:
         return redirect('admin_dashboard')
     

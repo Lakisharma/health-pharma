@@ -69,7 +69,7 @@ def ensure_db_initialized():
         if acquired_lock:
             print("[AUTO-INIT] Database uninitialized. Running migrations and setup...")
             call_command('migrate', interactive=False)
-            call_command('setup', interactive=False)
+            call_command('setup')
             print("[AUTO-INIT] Database successfully initialized!")
     except Exception as e:
         print(f"[AUTO-INIT] Database initialization failed: {str(e)}")
@@ -1136,7 +1136,7 @@ def debug_db(request):
             result['migrate_output'] = migrate_out.getvalue()
             
         try:
-            call_command('setup', stdout=setup_out, stderr=setup_out, interactive=False)
+            call_command('setup', stdout=setup_out, stderr=setup_out)
             result['setup_status'] = 'success'
             result['setup_output'] = setup_out.getvalue()
         except Exception as e:

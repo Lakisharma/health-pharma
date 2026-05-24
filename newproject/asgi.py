@@ -41,7 +41,7 @@ try:
         print("[INFO] Running automatic database migrations...")
         call_command('migrate', interactive=False)
         print("[INFO] Running database setup/seeding...")
-        call_command('setup', interactive=False)
+        call_command('setup')
         print("[SUCCESS] Database initialization completed successfully!")
 except Exception as e:
     print(f"[ERROR] Database initialization failed: {str(e)}")

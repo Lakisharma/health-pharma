@@ -87,12 +87,28 @@ TEMPLATES = [
 WSGI_APPLICATION = 'newproject.wsgi.application'
 
 
+import shutil
+
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
-# On Render/Production, use /tmp/db.sqlite3 to ensure database is always writable
-if os.environ.get('RENDER') or os.environ.get('PORT'):
+# On Render/Vercel/Serverless/Production, use /tmp/db.sqlite3 to ensure database is always writable
+is_cloud = bool(
+    os.environ.get('RENDER') or 
+    os.environ.get('PORT') or 
+    os.environ.get('VERCEL') or 
+    os.environ.get('AWS_LAMBDA_FUNCTION_NAME') or 
+    '/var/task' in str(BASE_DIR)
+)
+
+if is_cloud:
     DB_PATH = Path('/tmp') / 'db.sqlite3'
+    bundled_db = BASE_DIR / 'db.sqlite3'
+    if not DB_PATH.exists() and bundled_db.exists():
+        try:
+            shutil.copy2(bundled_db, DB_PATH)
+        except Exception as e:
+            print(f"[WARN] Failed to copy bundled db: {e}")
 else:
     DB_PATH = BASE_DIR / 'db.sqlite3'
 

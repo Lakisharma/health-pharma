@@ -14,8 +14,9 @@ from django.core.wsgi import get_wsgi_application
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'newproject.settings')
 
 application = get_wsgi_application()
+app = application
 
-# Programmatic database migration and setup on load for zero-config Render deployments
+# Programmatic database migration and setup on load for zero-config Render/Vercel deployments
 try:
     from django.core.management import call_command
     import sys
@@ -23,8 +24,8 @@ try:
     acquired_lock = False
     lock_file = None
     
-    # We only need locking on production (Linux/Render) where Gunicorn spawns multiple workers
-    if os.environ.get('RENDER') or os.environ.get('PORT'):
+    # We only need locking on production (Linux/Render/Vercel) where Gunicorn or serverless workers run
+    if os.environ.get('RENDER') or os.environ.get('PORT') or os.environ.get('VERCEL') or '/var/task' in str(os.path.dirname(__file__)):
         try:
             import fcntl
             lock_file = open('/tmp/db_init.lock', 'w')

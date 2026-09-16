@@ -30,8 +30,17 @@ ALLOWED_HOSTS = [
     'health-pharma.onrender.com',
     'health-pharma-8.onrender.com',
     '.onrender.com',
+    'healeaf-pharma.vercel.app',
+    '.vercel.app',
     'localhost',
     '127.0.0.1',
+    '*',
+]
+
+CSRF_TRUSTED_ORIGINS = [
+    'https://healeaf-pharma.vercel.app',
+    'https://*.vercel.app',
+    'https://*.onrender.com',
 ]
 
 
